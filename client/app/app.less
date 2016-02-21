@@ -1,0 +1,32 @@
+@import '../bower_components/bootstrap/less/bootstrap.less';
+@import '../bower_components/font-awesome/less/font-awesome.less';
+
+@icon-font-path: '../bower_components/bootstrap/fonts/';
+@fa-font-path: '../bower_components/font-awesome/fonts';
+
+/**
+ * App-wide Styles
+ */
+
+.browserupgrade {
+  margin: 0.2em 0;
+  background: #ccc;
+  color: #000;
+  padding: 0.2em 0;
+}
+
+.right { text-align: right !important; }
+.center { text-align: center !important; }
+
+.glyphicon-width { width: 16px !important; }
+
+// injector
+@import 'admin/admin.less';
+@import 'building/building.less';
+@import 'main/main.less';
+@import 'new-building/new-building.less';
+@import 'new-room/new-room.less';
+@import 'room/room.less';
+@import '../components/footer/footer.less';
+@import '../components/modal/modal.less';
+// endinjector

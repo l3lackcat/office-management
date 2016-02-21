@@ -1,0 +1,19 @@
+#room {
+  .panel {
+    .panel-body {
+      .row {
+        .form-group a { display: none; }
+
+        &:hover {
+          .form-group {
+            a { display: inline-block; }
+
+            &.editing {
+              a { display: none; }
+            }
+          }
+        }
+      }
+    }
+  }
+}

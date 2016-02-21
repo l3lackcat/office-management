@@ -1,0 +1,26 @@
+#building {
+  .panel {
+    .panel-body {
+      .row {
+        .form-group a { display: none; }
+
+        &:hover {
+          .form-group {
+            a { display: inline-block; }
+
+            &.editing {
+              a { display: none; }
+            }
+          }
+        }
+      }
+    }
+  }
+  table {
+    thead {}
+    tbody {
+      .status-n { color: #d9534f; }
+      .status-y { color: #5cb85c; }
+    }
+  }
+}

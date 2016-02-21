@@ -1,0 +1,91 @@
+<div class="container" id="main">
+  <div tabset>
+    <div tab heading="Room">
+      <div class="row row-search">
+        <div class="col-xs-offset-8 col-xs-4 no-padding">
+          <div class="input-group pull-right">
+            <input type="text" class="form-control" placeholder="Search" ng-model="searchRoomCriteria" />
+            <div class="input-group-addon"><i class="glyphicon glyphicon-search"></i></div>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-xs-12">
+          <table class="table table-striped table-bordered">
+            <thead>
+              <tr>
+                <th class="center">&nbsp;</th>
+                <th class="center">Building</th>
+                <th class="center">Unit</th>
+                <th class="center">Floor</th>
+                <th class="center">Space</th>
+                <th class="center">Price</th>
+                <th class="center">Net Price</th>
+                <th class="center">Type</th>
+                <th class="center">Area</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr ng-repeat="room in roomList | filter:searchRoomCriteria">
+                <td class="center glyphicon-width">
+                  <span ng-show="room.status == 'Y'" class="status-y glyphicon glyphicon-ok" aria-hidden="true" title="Available"></span>
+                  <span ng-hide="room.status == 'Y'" class="status-n glyphicon glyphicon-remove" aria-hidden="true" title="Not Available"></span>
+                </td>
+                <td>
+                  <a href="/building/{{ room.building._id }}">{{ room.building.name }}</a>
+                </td>
+                <td class="center">
+                  <a href="/room/{{ room._id }}">{{ room.unit }}</a>
+                </td>
+                <td class="center">{{ room.floor }}</td>
+                <td class="right">{{ room.space | number:2 }}</td>
+                <td class="right">{{ room.price | number:2 }}</td>
+                <td class="right">{{ room.space * room.price | number:2 }}</td>
+                <td class="center">{{ room.type }}</td>
+                <td>{{ room.building.area }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    <div tab heading="Building">
+      <div class="row row-search">
+        <div class="col-xs-offset-8 col-xs-4 no-padding">
+          <div class="input-group pull-right">
+            <input type="text" class="form-control" placeholder="Search" ng-model="searchBuildingCriteria" />
+            <div class="input-group-addon"><i class="glyphicon glyphicon-search"></i></div>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-xs-12">
+          <table class="table table-striped">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Name</th>
+                <th>Tel.</th>
+                <th>Email</th>
+                <th>Area</th>
+                <th>Remark</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr ng-repeat="building in buildingList | filter:searchBuildingCriteria">
+                <td>{{ $index + 1 }}</td>
+                <td>
+                  <a href="/building/{{ building._id }}">{{ building.name }}</a>
+                </td>
+                <td>{{ building.contacts.phone }}</td>
+                <td>{{ building.contacts.email }}</td>
+                <td>{{ building.area }}</td>
+                <td>{{ building.remark }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

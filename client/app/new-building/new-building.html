@@ -1,0 +1,68 @@
+<div class="container" id="building">
+  <div class="panel panel-default">
+    <!-- Default panel contents -->
+    <div class="panel-heading">New Building</div>
+    <div class="panel-body">
+      <form class="form-horizontal">
+        <!-- Building Name -->
+        <div class="row">
+          <div class="form-group">
+            <label for="inputBuildingName" class="col-xs-2 control-label">Name</label>
+            <div class="col-xs-8">
+              <input type="text" class="form-control" id="inputBuildingName" placeholder="Building Name" ng-model="building.name">
+            </div>
+          </div>
+        </div>
+
+        <!-- Building Phone -->
+        <div class="row">
+          <div class="form-group">
+            <label for="inputBuildingPhone" class="col-xs-2 control-label">Phone</label>
+            <div class="col-xs-8">
+              <input type="text" class="form-control" id="inputBuildingPhone" placeholder="Phone Number" ng-model="building.contacts.phone">
+            </div>
+          </div>
+        </div>
+
+        <!-- Building Email -->
+        <div class="row">
+          <div class="form-group">
+            <label for="inputBuildingEmail" class="col-xs-2 control-label">Email</label>
+            <div class="col-xs-8">
+              <input type="text" class="form-control" id="inputBuildingEmail" placeholder="Email Address" ng-model="building.contacts.email">
+            </div>
+          </div>
+        </div>
+
+        <!-- Building Area -->
+        <div class="row">
+          <div class="form-group">
+            <label for="inputBuildingArea" class="col-xs-2 control-label">Area</label>
+            <div class="col-xs-8">
+              <input type="text" class="form-control" id="inputBuildingArea" placeholder="Area" ng-model="building.area">
+            </div>
+          </div>
+        </div>
+
+        <!-- Building Remark -->
+        <div class="row">
+          <div class="form-group">
+            <label for="inputBuildingRemark" class="col-xs-2 control-label">Remark</label>
+            <div class="col-xs-8">
+              <input type="text" class="form-control" id="inputBuildingRemark" placeholder="Remark" ng-model="building.remark">
+            </div>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="form-group">
+            <div class="col-xs-offset-2 col-xs-8">
+              <button class="btn btn-success" ng-click="save()">Save</button>
+              <button class="btn btn-danger" ng-click="cancel()">Cancel</button>
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
