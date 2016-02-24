@@ -2,27 +2,24 @@
 
 angular.module('officeManagementApp')
   .controller('NewRoomCtrl', function ($http, $location, $routeParams, $scope) {
-  	$scope['buildingId'] = $routeParams.buildingId
-  	$scope['buildingList'] = getBuildingList();
-
-    $scope.save = save;
-    $scope.cancel = cancel;
-
     function getBuildingList () {
       $http.get('/api/buildings').success(function(buildingList) {
-        $scope['buildingList'] = buildingList;
+        $scope.buildingList = buildingList;
       });
-    };
+    }
 
-    function save () {
-    	$scope['room']['building'] = $scope['buildingId'];
+  	$scope.buildingId = $routeParams.buildingId;
+  	$scope.buildingList = getBuildingList();
 
-      $http.post('/api/rooms', $scope['room']).success(function (newRoom) {
+    $scope.save = function () {
+      $scope.room.building = $scope.buildingId;
+
+      $http.post('/api/rooms', $scope.room).success(function (newRoom) {
         $location.path('/building/' + newRoom.building);
       });
     };
 
-    function cancel () {
-      $location.path('/building/' + $scope['buildingId']);
+    $scope.cancel = function () {
+      $location.path('/building/' + $scope.buildingId);
     };
   });
