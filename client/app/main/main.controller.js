@@ -2,8 +2,6 @@
 
 angular.module('officeManagementApp')
   .controller('MainController', function ($q, $scope, $http) {
-    var updateTableThrottle = _.throttle(updateTable, 500);
-
     // function getBuildingList () {
     //   $http.get('/api/buildings').success(function(buildingList) {
     //     $scope.buildingList = buildingList;
@@ -23,10 +21,10 @@ angular.module('officeManagementApp')
       $q.all([
         applyFilter()
       ])
-      .then(function (results) {
+      .then(function () {
         // Do Nothing
       });
-    };
+    }
 
     function checkBetween (value, lower, upper) {
       if ((lower === '') && (upper === '')) { return true; }
@@ -40,7 +38,7 @@ angular.module('officeManagementApp')
       }
 
       return isBetween;
-    };
+    }
 
     function applyFilter () {
       for(var i = 0; i < $scope.roomList.length; i++) {
@@ -52,7 +50,9 @@ angular.module('officeManagementApp')
           $scope.filteredRoomList.push(room);
         }
       }
-    };
+    }
+
+    var updateTableThrottle = _.throttle(updateTable, 500);
 
     // $scope.buildingList = getBuildingList();
     $scope.roomList = getRoomList();
