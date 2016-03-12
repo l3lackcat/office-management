@@ -22,7 +22,7 @@ angular.module('officeManagementApp')
         applyFilter()
       ])
       .then(function () {
-        // Do Nothing
+        // Do Nothing.
       });
     }
 
@@ -54,7 +54,6 @@ angular.module('officeManagementApp')
 
     var updateTableThrottle = _.throttle(updateTable, 500);
 
-    // $scope.buildingList = getBuildingList();
     $scope.roomList = getRoomList();
     $scope.filteredRoomList = [];
     $scope.netPriceFilter = { lower: '', upper: '' };
