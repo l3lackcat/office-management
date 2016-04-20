@@ -11,10 +11,10 @@
     "angular-sanitize": "~1.4.0",
     "angular-route": "~1.4.0",
     "angular-bootstrap": "~0.13.0",
+    "angular-file-upload": "~2.2.0",
     "font-awesome": ">=4.1.0",
     "lodash": "~2.4.1",
     "angular-validation-match": "~1.5.2",
-    "ng-table": "~0.4.2",
     "momentjs": "~2.10.2"
   },
   "devDependencies": {

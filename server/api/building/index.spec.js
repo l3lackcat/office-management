@@ -5,6 +5,7 @@ var proxyquire = require('proxyquire').noPreserveCache();
 var buildingCtrlStub = {
   index: 'buildingCtrl.index',
   show: 'buildingCtrl.show',
+  findByName: 'buildingCtrl.findByName',
   create: 'buildingCtrl.create',
   update: 'buildingCtrl.update',
   destroy: 'buildingCtrl.destroy'
@@ -49,6 +50,16 @@ describe('Building API Router:', function() {
     it('should route to building.controller.show', function() {
       routerStub.get
         .withArgs('/:id', 'buildingCtrl.show')
+        .should.have.been.calledOnce;
+    });
+
+  });
+
+  describe('GET /api/building/findByName/:name', function() {
+
+    it('should route to building.controller.findByName', function() {
+      routerStub.get
+        .withArgs('/', 'buildingCtrl.findByName')
         .should.have.been.calledOnce;
     });
 

@@ -1,16 +1,16 @@
 /**
  * Using Rails-like standard naming convention for endpoints.
- * GET     /api/buildings              ->  index
- * POST    /api/buildings              ->  create
- * GET     /api/buildings/:id          ->  show
- * PUT     /api/buildings/:id          ->  update
- * DELETE  /api/buildings/:id          ->  destroy
+ * GET     /api/building-units              ->  index
+ * POST    /api/building-units              ->  create
+ * GET     /api/building-units/:id          ->  show
+ * PUT     /api/building-units/:id          ->  update
+ * DELETE  /api/building-units/:id          ->  destroy
  */
 
 'use strict';
 
 import _ from 'lodash';
-import Building from './building.model';
+import BuildingUnit from './building-unit.model';
 
 function respondWithResult(res, statusCode) {
   statusCode = statusCode || 200;
@@ -59,51 +59,55 @@ function handleError(res, statusCode) {
   };
 }
 
-// Gets a list of Buildings
+// Gets a list of BuildingUnits
 export function index(req, res) {
-  Building.findAsync()
+  BuildingUnit.find()
+    .populate('building')
+    .execAsync()
     .then(respondWithResult(res))
     .catch(handleError(res));
 }
 
-// Gets a single Building from the DB
+// Gets a single BuildingUnit from the DB
 export function show(req, res) {
-  Building.findByIdAsync(req.params.id)
+  BuildingUnit.findByIdAsync(req.params.id)
     .then(handleEntityNotFound(res))
     .then(respondWithResult(res))
     .catch(handleError(res));
 }
 
-// Gets a list of Building by name
-export function findByName(req, res) {
-  Building.find({ name: req.params.name })
+// Gets a list of BuildingUnits by buildingId
+export function findByBuildingId(req, res) {
+  BuildingUnit.find({ building: req.params.id })
+    .populate('building')
+    .execAsync()
     .then(handleEntityNotFound(res))
     .then(respondWithResult(res))
     .catch(handleError(res));
 }
 
-// Creates a new Building in the DB
+// Creates a new BuildingUnit in the DB
 export function create(req, res) {
-  Building.createAsync(req.body)
+  BuildingUnit.createAsync(req.body)
     .then(respondWithResult(res, 201))
     .catch(handleError(res));
 }
 
-// Updates an existing Building in the DB
+// Updates an existing BuildingUnit in the DB
 export function update(req, res) {
   if (req.body._id) {
     delete req.body._id;
   }
-  Building.findByIdAsync(req.params.id)
+  BuildingUnit.findByIdAsync(req.params.id)
     .then(handleEntityNotFound(res))
     .then(saveUpdates(req.body))
     .then(respondWithResult(res))
     .catch(handleError(res));
 }
 
-// Deletes a Building from the DB
+// Deletes a BuildingUnit from the DB
 export function destroy(req, res) {
-  Building.findByIdAsync(req.params.id)
+  BuildingUnit.findByIdAsync(req.params.id)
     .then(handleEntityNotFound(res))
     .then(removeEntity(res))
     .catch(handleError(res));

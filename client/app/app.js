@@ -10,7 +10,7 @@ angular.module('officeManagementApp', [
   'ngRoute',
   'ui.bootstrap',
   'validation.match',
-  'ngTable'
+  'angularFileUpload'
 ])
   .config(function($routeProvider, $locationProvider) {
     $routeProvider

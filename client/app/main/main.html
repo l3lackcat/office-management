@@ -8,7 +8,7 @@
             <div class="form-inline">
               <div class="form-group">
                 <input type="text" class="form-control" id="inputSpaceFilter1" ng-change="updateTableThrottle()" ng-model="spaceFilter.lower">
-                <label for="inputSpaceFilter2">to</label>
+                <label for="inputSpaceFilter2" style="margin: 0 5px;">to</label>
                 <input type="text" class="form-control" id="inputSpaceFilter2" ng-change="updateTableThrottle()" ng-model="spaceFilter.upper">
               </div>
             </div>
@@ -20,7 +20,7 @@
             <div class="form-inline">
               <div class="form-group">
                 <input type="text" class="form-control" id="inputPriceFilter1" ng-change="updateTableThrottle()" ng-model="priceFilter.lower">
-                <label for="inputPriceFilter2">to</label>
+                <label for="inputPriceFilter2" style="margin: 0 5px;">to</label>
                 <input type="text" class="form-control" id="inputPriceFilter2" ng-change="updateTableThrottle()" ng-model="priceFilter.upper">
               </div>
             </div>
@@ -32,7 +32,7 @@
             <div class="form-inline">
               <div class="form-group">
                 <input type="text" class="form-control" id="inputNetPriceFilter1" ng-change="updateTableThrottle()" ng-model="netPriceFilter.lower">
-                <label for="inputNetPriceFilter2">to</label>
+                <label for="inputNetPriceFilter2" style="margin: 0 5px;">to</label>
                 <input type="text" class="form-control" id="inputNetPriceFilter2" ng-change="updateTableThrottle()" ng-model="netPriceFilter.upper">
               </div>
             </div>
@@ -42,6 +42,23 @@
     </div>
     <table class="table table-striped table-bordered">
       <thead>
+        <tr>
+          <th class="center">Building</th>
+          <th class="center">Area</th>
+        </tr>
+      </thead>
+      <tbody ng-if="buildingList.length > 0">
+        <tr ng-repeat="building in buildingList | orderBy: 'area'">
+          <td class="right">{{ building.name }}</td>
+          <td class="center">{{ building.area }}</td>
+        </tr>
+      </tbody>
+      <tbody ng-if="buildingList.length <= 0">
+        <tr>
+          <td colspan="9" class="center">No results found</td>
+        </tr>
+      </tbody>
+      <!-- <thead>
         <tr>
           <th class="center">&nbsp;</th>
           <th class="center">Building</th>
@@ -78,7 +95,7 @@
         <tr>
           <td colspan="9" class="center">No results found</td>
         </tr>
-      </tbody>
+      </tbody> -->
     </table>
   </div>
   <!-- <div tabset>

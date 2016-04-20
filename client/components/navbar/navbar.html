@@ -12,6 +12,7 @@
     <div collapse="nav.isCollapsed" class="navbar-collapse collapse" id="navbar-main">
       <ul class="nav navbar-nav">
         <li ng-show="nav.isLoggedIn()" ng-class="{active: isActive('/new-building')}"><a href="/new-building">Add Building</a></li>
+        <li ng-show="nav.isLoggedIn()" ng-class="{active: isActive('/import-building')}"><a href="/import-building">Import Building</a></li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
         <li ng-hide="nav.isLoggedIn()" ng-class="{active: isActive('/signup')}"><a href="/signup">Sign up</a></li>
