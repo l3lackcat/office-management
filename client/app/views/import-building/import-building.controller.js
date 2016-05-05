@@ -6,11 +6,8 @@ angular.module('officeManagementApp')
 
     $scope.uploader = new FileUploader();
 
-    $scope.importedStatus = '';
-    $scope.importedProgress = 0;
-
     $scope.importFile = importFile;
-    $scope.removeFile = removeFile;
+    $scope.reset = reset;
 
     function onChangedFile (e) {
         var files = e.target.files;
@@ -32,8 +29,9 @@ angular.module('officeManagementApp')
 
     function extractBuildingUnit (buildingObj) {
         return {
-            name: buildingObj.unitName,
-            floor: buildingObj.floor,
+            building: '',
+            name: buildingObj.unitName.toString(),
+            floor: buildingObj.floor.toString(),
             space: parseFloat(buildingObj.space),
             price: parseFloat(buildingObj.price),
             type: buildingObj.type,
@@ -43,36 +41,22 @@ angular.module('officeManagementApp')
         };
     };
 
-    function insertNewBuilding (buildingObj) {
-        $http.post('/api/buildings', buildingObj).success(function (newBuilding) {
-            console.log('Insert building: ' + newBuilding.name + ' complete.');
-        });
-    };
-
-    // function insertNewBuildingUnit (buildingUnitObj) {
-    //     $http.post('/api/building-units', buildingUnitObj).success(function (newBuilding) {
-
-    //     });
-    // };
-
-    function importFile () {
-        var groupedBuildingList = [];
+    function generateNewBuildingList () {
+        var newBuildingList = [];
         var importedBuildingCount = _importedBuildingList.length;
-
-        $scope.importedStatus = 'Preparing...';
-        $scope.importedProgress = 0;
 
         for(var i = importedBuildingCount - 1; i >= 0; i--) {
             var importedBuilding = _importedBuildingList[i];
             var buildingName = importedBuilding.buildingName || '';
 
             if (buildingName !== '') {
-                var buildingObj = _.find(groupedBuildingList, { name: buildingName });
+                var buildingObj = _.find(newBuildingList, { name: buildingName });
                 var buildingUnitObj = extractBuildingUnit(importedBuilding);
 
                 if (buildingObj == null) {
-                    groupedBuildingList.push({
-                        name: buildingName,
+                    newBuildingList.push({
+                        id: '',
+                        name: buildingName.toString(),
                         area: importedBuilding.area || '',
                         units: [buildingUnitObj]
                     });
@@ -80,70 +64,142 @@ angular.module('officeManagementApp')
                     buildingObj.units.push(buildingUnitObj);
                 }
             }
-
-            $scope.importedProgress += ((i / importedBuildingCount) * 10);
         }
 
-        $scope.importedStatus = 'Importing...';
-        $scope.importedProgress = 10;
-
-        var groupedBuildingCount = groupedBuildingList.length;
-        var findBuildingPromise = {};
-
-        for(var i = groupedBuildingList.length - 1; i >= 0; i--) {
-            var buildingName = groupedBuildingList[i].name;
-
-            findBuildingPromise[buildingName] = $http.get('/api/buildings/findByName/' + buildingName);
-        }
-
-        $q.all(findBuildingPromise).then(function (results) {
-            var insertBuildingPromise = null;
-
-            for(var buildingName in results) {
-                var buildingObj = _.find(groupedBuildingList, { name: buildingName });
-                var result = results[buildingName];
-
-                if (result.data.length > 0) {
-                    var buildingId = result.data[0].id || '';
-
-                    if (buildingId !== '') {
-                        for(var i = buildingObj.units.length - 1; i >= 0; i--) {
-                            // TODO : Find building unit by name, floor, and buildingId. If not found, insert. Else, ignore.
-                        }
-                    }
-                } else {
-                    if (insertBuildingPromise === null) {
-                        insertBuildingPromise = {};
-                    }
-
-                    insertBuildingPromise[buildingName] = $http.post('/api/buildings', {
-                        name: buildingName,
-                        area: buildingObj.area
-                    });
-                }
-            }
-
-            if (insertBuildingPromise !== null) {
-                $q.all(insertBuildingPromise).then(function (results) {
-                    // TODO : Insert building units
-                });
-            }
-        });
-
-        // console.log(newBuildingPromise);
-
-        $scope.importedStatus = 'Import complete!!!';
-        // $scope.importedProgress = 100;
+        return newBuildingList;
     };
 
-    function removeFile () {
+    function insertNewBuildingList (buildingList) {
+        if (buildingList.length === 0) { return null; }
+
+        var insertBuildingPromise = {};
+
+        for(var i = buildingList.length - 1; i >= 0; i--) {
+            var buildingObj = buildingList[i];
+            var buildingName = buildingObj.name;
+
+            insertBuildingPromise[buildingName] = $http.post('/api/buildings', {
+                name: buildingName,
+                area: buildingObj.area
+            });
+        }
+
+        return $q.all(insertBuildingPromise).then(function (results) {
+            return results;
+        });
+    };
+
+    function importFile () {
+        // updateStatus(STATUS_IMPORTING);
+
+        var newBuildingList = generateNewBuildingList();
+
+        if (newBuildingList.length > 0) {
+            $http.get('/api/buildings').success(function (buildingList) {
+                var oldBuildingList = [];
+
+                for(var i = newBuildingList.length - 1; i >= 0; i--) {
+                    var newBuildingObj = newBuildingList[i];
+                    var oldBuildingObj = _.find(buildingList, { name: newBuildingObj.name.toString() });
+
+                    if (oldBuildingObj != null) {
+                        newBuildingObj.id = oldBuildingObj._id;
+
+                        oldBuildingList.push(angular.copy(newBuildingObj));
+                        newBuildingList.splice(i, 1);
+                    }
+                }
+
+                $q.all([
+                    insertNewBuildingList(newBuildingList)
+                ]).then(function (results) {
+                    var insertResult = results[0];
+
+                    for(var i = newBuildingList.length - 1; i >= 0; i--) {
+                        var newBuildingObj = newBuildingList[i];
+                        var oldBuildingObj = insertResult[newBuildingObj.name].data;
+
+                        newBuildingObj.id = oldBuildingObj._id;
+                    }
+
+                    processOldBuildingList(oldBuildingList.concat(newBuildingList));
+                });
+            });
+        } else {
+            // updateStatus(STATUS_COMPLETED);
+        }
+    };
+
+    function processOldBuildingList (buildingList) {
+        var searchBuildingUnitPromise = null;
+
+        for(var i = buildingList.length - 1; i >= 0; i--) {
+            var buildingObj = buildingList[i];
+            var buildingId = buildingObj.id;
+            var buildingUnitList = buildingObj.units;
+
+            if (searchBuildingUnitPromise === null) {
+                searchBuildingUnitPromise = {};
+            }
+
+            searchBuildingUnitPromise[buildingId] = $http.get('/api/building-units/buildingId/' + buildingId);
+        }
+
+        if (searchBuildingUnitPromise !== null) {
+            $q.all(searchBuildingUnitPromise).then(function (results) {
+                var buildingUnitPromise = null;
+
+                for(var buildingId in results) {
+                    var buildingObj = _.find(buildingList, { id: buildingId });
+
+                    if (buildingObj != null) {
+                        var result = results[buildingId];
+                        var oldBuildingUnitList = result.data;
+                        var newBuildingUnitList = buildingObj.units;
+
+                        for(var i = newBuildingUnitList.length - 1; i >= 0; i--) {
+                            var newBuildingUnitObj = newBuildingUnitList[i];
+                            var oldBuildingUnitObj = _.find(oldBuildingUnitList, { name: newBuildingUnitObj.name });
+
+                            newBuildingUnitObj.building = buildingId;
+
+                            if (oldBuildingUnitObj == null) {
+                                if (buildingUnitPromise == null) {
+                                    buildingUnitPromise = [];
+                                }
+
+                                buildingUnitPromise.push($http.post('/api/building-units', newBuildingUnitObj));
+                            } else {
+                                if (buildingUnitPromise == null) {
+                                    buildingUnitPromise = [];
+                                }
+
+                                buildingUnitPromise.push($http.put('/api/building-units/' + oldBuildingUnitObj._id, newBuildingUnitObj));
+                            }
+                        }
+                    }
+                }
+
+                if (buildingUnitPromise !== null) {
+                    $q.all(buildingUnitPromise).then(function (results) {
+                        // updateStatus(STATUS_COMPLETED);
+                    });
+                } else {
+                    // updateStatus(STATUS_COMPLETED);
+                }
+            });
+        } else {
+            // updateStatus(STATUS_COMPLETED);
+        }
+    };
+
+    function reset () {
         _importedBuildingList = null;
 
         angular.element('#file').val('');
-        $scope.uploader.clearQueue();
 
+        $scope.uploader.clearQueue();
         $scope.importedStatus = '';
-        $scope.importedProgress = 0;
     };
 
     angular.element('#file').bind('change', onChangedFile);

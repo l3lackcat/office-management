@@ -1,0 +1,19 @@
+<div id="building-unit-modal">
+  <div class="modal-header">
+    <h3 class="modal-title">Unit</h3>
+  </div>
+  <div class="modal-body">
+    <form class="form-horizontal">
+      <div class="form-group">
+        <label for="input-buildingUnit.name" class="col-sm-3 control-label">Name</label>
+        <div class="col-sm-9">
+          <input type="text" class="form-control" id="input-buildingUnit.name" placeholder="Name" ng-model="buildingUnit.name">
+        </div>
+      </div>
+    </form>
+  </div>
+  <div class="modal-footer">
+    <button class="btn btn-primary" type="button" ng-click="ok()">OK</button>
+    <button class="btn btn-warning" type="button" ng-click="cancel()">Cancel</button>
+  </div>
+</div>

@@ -1,0 +1,99 @@
+<div class="container" id="main">
+  <div class="row">
+    <div class="col-md-2">
+      <h3 class="inline-button">Filters</h3>
+      <form>
+        <div class="form-group">
+          <label>Building Name</label>
+          <input type="text" class="form-control input-sm" placeholder="Building Name" ng-model="buildingUnitFilter.buildingName" />
+        </div>
+        <div class="form-group">
+          <label>Space</label>
+          <ui-select multiple ng-model="buildingUnitFilter.spaceRange.selected" close-on-select="false">
+            <ui-select-match placeholder="Select space range(s)">{{ $item.name }}</ui-select-match>
+            <ui-select-choices repeat="item in buildingUnitFilter.spaceRange.list">
+              <span>{{ item.name }}</span>
+            </ui-select-choices>
+          </ui-select>
+        </div>
+        <div class="form-group">
+          <label>Price</label>
+          <ui-select multiple ng-model="buildingUnitFilter.priceRange.selected" close-on-select="false">
+            <ui-select-match placeholder="Select price range(s)">{{ $item.name }}</ui-select-match>
+            <ui-select-choices repeat="item in buildingUnitFilter.priceRange.list">
+              <span>{{ item.name }}</span>
+            </ui-select-choices>
+          </ui-select>
+        </div>
+        <div class="form-group">
+          <label>Area</label>
+          <ui-select multiple tagging ng-model="buildingUnitFilter.area.selected" close-on-select="false">
+            <ui-select-match placeholder="Select area(s)">{{ $item.name }}</ui-select-match>
+            <ui-select-choices repeat="item in buildingUnitFilter.area.list">
+              <span>{{ item.name }}</span>
+            </ui-select-choices>
+          </ui-select>
+        </div>
+      </form>
+    </div>
+    <div class="col-md-10">
+      <div class="row">
+        <div class="col-sm-12">
+          <h3 class="inline-button">Results</h3>
+          <div class="btn-group pull-right" uib-dropdown is-open="actionButton.isOpen">
+            <button id="single-button" type="button" class="btn btn-primary" uib-dropdown-toggle ng-disabled="actionButton.disabled">
+              <span>Action</span>
+              <span class="caret"></span>
+            </button>
+            <ul class="dropdown-menu" uib-dropdown-menu role="menu" aria-labelledby="single-button">
+              <li role="menuitem"><a href="#" ng-click="setBuildingUnitAvaillable(true)">Set as available</a></li>
+              <li role="menuitem"><a href="#" ng-click="setBuildingUnitAvaillable(false)">Set as unavailble</a></li>
+              <li class="divider"></li>
+              <li role="menuitem"><a href="#" ng-click="exportToPdf">Export to PDF</a></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-sm-12">
+          <table class="table table-striped table-condensed">
+            <thead>
+              <tr>
+                <th>
+                  <input type="checkbox" ng-model="isSelectAllBuildingUnit" ng-change="toggleBuildingUnitSelection()" />
+                </th>
+                <th>&nbsp;</th>
+                <th>Building Name</th>
+                <th>Area</th>
+                <th>Unit</th>
+                <th>Fl.</th>
+                <th class="right">Space</th>
+                <th class="right">Price</th>
+                <th class="right">Net Price</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr ng-repeat="buildingUnit in buildingUnitList | filter:applyFilter">
+                <td>
+                  <input type="checkbox" ng-model="buildingUnit.selected" ng-change="updateBuildingUnitSelection()" />
+                </td>
+                <td>
+                  <i class="fa fa-circle building-unit-status" aria-hidden="true" ng-class="{ available: buildingUnit.available }"></i>
+                </td>
+                <td>
+                  <a href="/building/{{ buildingUnit.building._id }}">{{ buildingUnit.building.name }}</a>
+                </td>
+                <td>{{ buildingUnit.building.area }}</td>
+                <td>{{ buildingUnit.name }}</td>
+                <td>{{ buildingUnit.floor }}</td>
+                <td class="right">{{ buildingUnit.space | number:2 }}</td>
+                <td class="right">{{ buildingUnit.price | number:2 }}</td>
+                <td class="right">{{ (buildingUnit.space * buildingUnit.price) | number:2 }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

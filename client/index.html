@@ -13,6 +13,7 @@
     <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
     <!-- build:css(client) app/vendor.css -->
       <!-- bower:css -->
+      <link rel="stylesheet" href="bower_components/angular-ui-select/dist/select.css" />
       <!-- endbower -->
     <!-- endbuild -->
     <!-- build:css({.tmp,client}) app/app.css -->
@@ -56,9 +57,12 @@
       <script src="bower_components/angular-route/angular-route.js"></script>
       <script src="bower_components/angular-bootstrap/ui-bootstrap-tpls.js"></script>
       <script src="bower_components/angular-file-upload/dist/angular-file-upload.min.js"></script>
-      <script src="bower_components/lodash/dist/lodash.compat.js"></script>
+      <script src="bower_components/angular-ui-select/dist/select.js"></script>
+      <script src="bower_components/lodash/lodash.js"></script>
       <script src="bower_components/angular-validation-match/dist/angular-validation-match.min.js"></script>
       <script src="bower_components/momentjs/moment.js"></script>
+      <script src="bower_components/pdfmake/build/pdfmake.js"></script>
+      <script src="bower_components/pdfmake/build/vfs_fonts.js"></script>
       <!-- endbower -->
     <!-- endbuild -->
     <!-- build:js(.tmp) app/app.js -->
@@ -67,26 +71,25 @@
       <script src="app/admin/admin.module.js"></script>
       <script src="components/auth/auth.module.js"></script>
       <script src="components/util/util.module.js"></script>
-      <script src="app/new-building/new-building.js"></script>
+      <script src="app/views/building/building.controller.js"></script>
       <script src="app/admin/admin.controller.js"></script>
       <script src="app/account/account.js"></script>
       <script src="app/admin/admin.router.js"></script>
       <script src="app/app.constant.js"></script>
-      <script src="app/building/building.controller.js"></script>
-      <script src="app/building/building.js"></script>
-      <script src="app/constants/train-stations/train-stations.service.js"></script>
-      <script src="app/factories/lodash/lodash.service.js"></script>
-      <script src="app/filters/displayed-room-status/displayed-room-status.filter.js"></script>
-      <script src="app/main/main.controller.js"></script>
-      <script src="app/main/main.js"></script>
-      <script src="app/new-building/new-building.controller.js"></script>
+      <script src="app/constants/modal-list.js"></script>
+      <script src="app/constants/train-stations-list.js"></script>
+      <script src="app/factories/commons/app-constant/app-constant.js"></script>
+      <script src="app/factories/commons/lodash/lodash.factory.js"></script>
+      <script src="app/factories/commons/pdf-make/pdf-make.service.js"></script>
+      <script src="app/factories/services/pdf-service/pdf-service.service.js"></script>
+      <script src="app/filters/displayed-building-unit-status/displayed-building-unit-status.filter.js"></script>
+      <script src="app/modals/building-unit-modal/building-unit-modal.controller.js"></script>
       <script src="app/account/login/login.controller.js"></script>
-      <script src="app/new-room/new-room.controller.js"></script>
-      <script src="app/new-room/new-room.js"></script>
-      <script src="app/room/room.controller.js"></script>
-      <script src="app/room/room.js"></script>
+      <script src="app/views/building/building.js"></script>
       <script src="app/views/import-building/import-building.controller.js"></script>
       <script src="app/views/import-building/import-building.js"></script>
+      <script src="app/views/main/main.controller.js"></script>
+      <script src="app/views/main/main.js"></script>
       <script src="app/account/settings/settings.controller.js"></script>
       <script src="components/auth/auth.service.js"></script>
       <script src="components/auth/interceptor.service.js"></script>
