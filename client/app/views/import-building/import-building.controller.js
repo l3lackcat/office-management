@@ -1,43 +1,28 @@
 'use strict';
 
 angular.module('officeManagementApp')
-  .controller('ImportBuildingCtrl', function ($http, $loading, $q, $scope, _, FileUploader) {
+  .controller('ImportBuildingCtrl', function ($http, $loading, $q, $scope, $uibModal, _, AppConstant, FileUploader, XLSX) {
     var _importedBuildingList = null;
 
     $scope.uploader = new FileUploader();
+    $scope.excelSheet = { list: [], selected: null };
 
     $scope.importBuilding = importBuilding;
+    $scope.onChangedSelectedSheet = onChangedSelectedSheet;
+    $scope.previewBuilding = previewBuilding;
     $scope.reset = reset;
-
-    function onChangedFile (e) {
-        var files = e.target.files;
-
-        for(var i = files.length - 1; i >= 0; i--) {
-            var file = files[i];
-
-            if (file.name.indexOf('.json') > -1) {
-                var reader = new FileReader();
-
-                reader.onload = function (theFile) {
-                    _importedBuildingList = JSON.parse(theFile.target.result);
-                };
-
-                reader.readAsText(file);
-            }
-        }
-    };
 
     function extractBuildingUnit (buildingObj) {
         return {
             building: '',
-            name: buildingObj.unitName.toString(),
-            floor: buildingObj.floor.toString(),
-            size: parseFloat(buildingObj.size),
-            price: parseFloat(buildingObj.price),
-            type: buildingObj.type,
+            name: (buildingObj.unitName || '').toString(),
+            floor: (buildingObj.floor || '').toString(),
+            size: parseFloat(buildingObj.size || 0),
+            price: parseFloat(buildingObj.price || 0),
+            type: buildingObj.type || 'Office',
             available: (buildingObj.available === 'Y') ? true : false,
-            remark: buildingObj.remarks,
-            contact: buildingObj.contact
+            remark: buildingObj.remarks || '',
+            contact: buildingObj.contact || ''
         };
     };
 
@@ -90,8 +75,6 @@ angular.module('officeManagementApp')
     };
 
     function importBuilding () {
-        // updateStatus(STATUS_IMPORTING);
-
         $loading.start('import-building');
 
         var newBuildingList = generateNewBuildingList();
@@ -128,7 +111,69 @@ angular.module('officeManagementApp')
                 });
             });
         } else {
-            // updateStatus(STATUS_COMPLETED);
+            reset();
+        }
+    };
+
+    function onChangedSelectedFile (e) {
+        var files = e.target.files;
+
+        _importedBuildingList = null;
+
+        $scope.uploader.clearQueue();
+        $scope.excelSheet = { list: [], selected: null };
+
+        for(var i = files.length - 1; i >= 0; i--) {
+            var file = files[i];
+            var fileName = file.name;
+
+            if (fileName.indexOf('.json') > -1) {
+                var reader = new FileReader();
+
+                reader.onload = function (theFile) {
+                    _importedBuildingList = JSON.parse(theFile.target.result);
+                };
+
+                reader.readAsText(file);
+            } else if (fileName.indexOf('.xlsx') > -1) {
+                var reader = new FileReader();
+
+                reader.onload = function (theFile) {
+                    var workbook = XLSX.read(theFile.target.result, { type: 'binary' });
+
+                    $q.all([
+                        readExcelSheet(workbook)
+                    ]).then(function (results) {
+                        // Do Nothing
+                    });
+                };
+
+                reader.readAsBinaryString(file);
+            }
+        }
+    };
+
+    function onChangedSelectedSheet () {
+        var data = $scope.excelSheet.selected.data;
+
+        if (data != null) {
+            _importedBuildingList = XLSX.utils.sheet_to_json(data);
+        } else {
+            _importedBuildingList = null;
+        }
+    };
+
+    function previewBuilding () {
+        var options = _.find(AppConstant.MODAL_LIST, { name: 'BuildingViewerModal' });
+
+        if (options != null) {
+            options.resolve = {
+                buildingList: function () {
+                    return generateNewBuildingList();;
+                }
+            };
+
+            $uibModal.open(options);
         }
     };
 
@@ -184,15 +229,28 @@ angular.module('officeManagementApp')
 
                 if (buildingUnitPromise !== null) {
                     $q.all(buildingUnitPromise).then(function (results) {
-                        $loading.finish('import-building');
+                        reset();
                     });
                 } else {
-                    $loading.finish('import-building');
+                    reset();
                 }
             });
         } else {
-            $loading.finish('import-building');
+            reset();
         }
+    };
+
+    function readExcelSheet (workbook) {
+        var sheets = workbook.Sheets || {};
+
+        for(var sheetName in sheets) {
+            $scope.excelSheet.list.push({
+                name: sheetName,
+                data: sheets[sheetName]
+            })
+        }
+
+        console.log($scope.excelSheet.list);
     };
 
     function reset () {
@@ -201,8 +259,10 @@ angular.module('officeManagementApp')
         angular.element('#file').val('');
 
         $scope.uploader.clearQueue();
-        $scope.importedStatus = '';
+        $scope.excelSheet = { list: [], selected: null };
+
+        $loading.finish('import-building');
     };
 
-    angular.element('#file').bind('change', onChangedFile);
+    angular.element('#file').bind('change', onChangedSelectedFile);
   });

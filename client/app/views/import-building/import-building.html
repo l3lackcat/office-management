@@ -1,33 +1,52 @@
 <div class="container" id="import-building" dw-loading="import-building" dw-loading-options="{ text: 'Importing...' }">
   <div class="row">
-		<div class="col-md-3">
-			<h3>Select a File</h3>
-			<input type="file" id="file" accept=".json" nv-file-select="" uploader="uploader">
-		</div>
-		<div class="col-md-9" style="margin-bottom: 40px">
-			<h3>Upload queue</h3>
-			<table class="table">
-				<thead>
-					<tr>
-						<th width="50%">Name</th>
-						<th ng-show="uploader.isHTML5">Size</th>
-					</tr>
-				</thead>
-				<tbody>
-					<tr ng-repeat="item in uploader.queue">
-						<td><strong>{{ item.file.name }}</strong></td>
-						<td ng-show="uploader.isHTML5" nowrap>{{ item.file.size/1024/1024|number:2 }} MB</td>
-					</tr>
-				</tbody>
-			</table>
-			<div>
-				<button type="button" class="btn btn-success btn-s" ng-click="importBuilding()" ng-disabled="!uploader.getNotUploadedItems().length" disabled="disabled">
-					<span class="glyphicon glyphicon-upload"></span> Import
-				</button>
-				<button type="button" class="btn btn-danger btn-s" ng-click="reset()" ng-disabled="!uploader.queue.length" disabled="disabled">
-					<span class="glyphicon glyphicon-trash"></span> Remove
-				</button>
-			</div>
-		</div>
+    <div class="col-md-3">
+      <h3>Select a File</h3>
+      <input type="file" id="file" accept=".json, .xlsx" nv-file-select="" uploader="uploader">
+    </div>
+    <div class="col-md-9">
+      <div class="row">
+        <div class="col-sm-12" ng-show="excelSheet.list.length > 0">
+          <h3>Select sheet</h3>
+          <ui-select ng-model="excelSheet.selected" ng-change="onChangedSelectedSheet()">
+            <ui-select-match placeholder="Select sheet">{{ $select.selected.name }}</ui-select-match>
+            <ui-select-choices repeat="item in excelSheet.list">
+              <span>{{ item.name }}</span>
+            </ui-select-choices>
+          </ui-select>
+        </div>
+        <div class="col-sm-12">
+          <h3>Upload queue</h3>
+          <table class="table">
+            <thead>
+              <tr>
+                <th width="50%">Name</th>
+                <th ng-show="uploader.isHTML5">Size</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr ng-repeat="item in uploader.queue">
+                <td><strong>{{ item.file.name }}</strong></td>
+                <td ng-show="uploader.isHTML5" nowrap>{{ item.file.size/1024/1024|number:2 }} MB</td>
+              </tr>
+            </tbody>
+          </table>
+          <div>
+            <button type="button" class="btn btn-primary" ng-click="previewBuilding()" ng-disabled="!uploader.getNotUploadedItems().length" disabled="disabled">
+              <span class="glyphicon glyphicon-search"></span>
+              <span>Preview</span>
+            </button>
+            <button type="button" class="btn btn-primary" ng-click="importBuilding()" ng-disabled="!uploader.getNotUploadedItems().length" disabled="disabled">
+              <span class="glyphicon glyphicon-upload"></span>
+              <span>Import</span>
+            </button>
+            <button type="button" class="btn btn-default" ng-click="reset()" ng-disabled="!uploader.queue.length" disabled="disabled">
+              <span class="glyphicon glyphicon-remove"></span>
+              <span>Cancel</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </div>

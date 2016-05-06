@@ -1,0 +1,42 @@
+<div id="building-unit-modal">
+  <div class="modal-header">
+    <h3 class="modal-title">Custom Range</h3>
+  </div>
+  <div class="modal-body" dw-loading="building-viewer-modal" dw-loading-options="{ text: 'Loading...' }">
+    <table class="table table-striped table-condensed">
+      <thead>
+        <tr>
+          <th>&nbsp;</th>
+          <th>Building Name</th>
+          <th>Unit</th>
+          <th>Fl.</th>
+          <th class="right">Size</th>
+          <th class="right">Price</th>
+          <th>Type</th>
+          <th>Area</th>
+          <th>Remarks</th>
+          <th>Contact</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr ng-repeat="buildingUnit in buildingUnitList | orderBy: 'building.name'">
+          <td>
+            <i class="fa fa-circle building-unit-status" aria-hidden="true" ng-class="{ available: buildingUnit.available }"></i>
+          </td>
+          <td>{{ buildingUnit.building.name }}</td>
+          <td>{{ buildingUnit.name }}</td>
+          <td>{{ buildingUnit.floor }}</td>
+          <td class="right">{{ buildingUnit.size }}</td>
+          <td class="right">{{ buildingUnit.price }}</td>
+          <td>{{ buildingUnit.type }}</td>
+          <td>{{ buildingUnit.building.area }}</td>
+          <td>{{ buildingUnit.remark }}</td>
+          <td>{{ buildingUnit.contact }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="modal-footer">
+    <button class="btn btn-primary" type="button" ng-click="cancel()">Close</button>
+  </div>
+</div>

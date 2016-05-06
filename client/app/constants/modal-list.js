@@ -11,6 +11,14 @@ angular.module('officeManagementApp')
                 keyboard: true
             },
             {
+                name: 'BuildingViewerModal',
+                templateUrl: 'app/modals/building-viewer-modal/building-viewer-modal.html',
+                controller: 'BuildingViewerModalCtrl',
+                backdrop: 'static',
+                keyboard: true,
+                size: 'lg'
+            },
+            {
                 name: 'CustomRangeModal',
                 templateUrl: 'app/modals/custom-range-modal/custom-range-modal.html',
                 controller: 'CustomRangeModalCtrl',
