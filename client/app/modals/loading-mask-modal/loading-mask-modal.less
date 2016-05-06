@@ -1,0 +1,34 @@
+.loading-mask {
+    position: fixed;
+    background: rgba(0, 0, 0, 0.5);
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    z-index: 500;
+    opacity: 0;
+    visibility: hidden;
+    overflow: hidden;
+    -webkit-perspective: 1000px;
+    perspective: 1000px;
+    transition: opacity 0.5s, visibility 0s 0.5s;
+    -webkit-transition: opacity 0.5s, visibility 0s 0.5s;
+
+    .loading-mask-inner {
+        width: 100%;
+        height: 100%;
+    }
+
+    .loading-mask-content {
+        position: absolute;
+        top: calc(~'50% - 10px');
+        left: calc(~'50% - 35px');
+    }
+
+    &.loading-mask-open {
+        opacity: 1;
+        visibility: visible;
+        -webkit-transition: opacity 0.5s;
+        transition: opacity 0.5s;
+    }
+}

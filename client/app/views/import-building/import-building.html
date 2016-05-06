@@ -1,4 +1,4 @@
-<div class="container" id="import-building">
+<div class="container" id="import-building" dw-loading="import-building" dw-loading-options="{ text: 'Importing...' }">
   <div class="row">
 		<div class="col-md-3">
 			<h3>Select a File</h3>
@@ -21,7 +21,7 @@
 				</tbody>
 			</table>
 			<div>
-				<button type="button" class="btn btn-success btn-s" ng-click="importFile()" ng-disabled="!uploader.getNotUploadedItems().length" disabled="disabled">
+				<button type="button" class="btn btn-success btn-s" ng-click="importBuilding()" ng-disabled="!uploader.getNotUploadedItems().length" disabled="disabled">
 					<span class="glyphicon glyphicon-upload"></span> Import
 				</button>
 				<button type="button" class="btn btn-danger btn-s" ng-click="reset()" ng-disabled="!uploader.queue.length" disabled="disabled">

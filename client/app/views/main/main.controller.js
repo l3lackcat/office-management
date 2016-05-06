@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('officeManagementApp')
-    .controller('MainController', function ($filter, $http, $q, $scope, _, PdfService) {
+    .controller('MainController', function ($filter, $http, $loading, $q, $scope, _, PdfService) {
         $scope.buildingUnitList = [];
         $scope.buildingUnitFilter = {
             area: {
@@ -13,7 +13,7 @@ angular.module('officeManagementApp')
                 list: [],
                 selected: []
             },
-            spaceRange: {
+            sizeRange: {
                 list: [],
                 selected: []
             }
@@ -25,29 +25,18 @@ angular.module('officeManagementApp')
         };
 
         $scope.applyFilter = applyFilter;
-        // $scope.createBuildingUnitCounterText = createBuildingUnitCounterText;
         $scope.exportToPdf = exportToPdf;
         $scope.init = init;
+        $scope.print = print;
         $scope.setBuildingUnitAvaillable = setBuildingUnitAvaillable;
         $scope.toggleBuildingUnitSelection = toggleBuildingUnitSelection;
         $scope.updateBuildingUnitSelection = updateBuildingUnitSelection;
 
+        $scope.init();
+
         function applyFilter (item) {
-            return validateAreaFilter(item) && validateBuildingNameFilter(item) && validatePriceFilter(item) && validateSpaceFilter(item);
+            return validateAreaFilter(item) && validateBuildingNameFilter(item) && validatePriceFilter(item) && validateSizeFilter(item);
         };
-
-        // function createBuildingUnitCounterText () {
-        //     var selectedBuildingUnitList = _.filter($scope.buildingUnitList, { selected: true });
-        //     var selectedBuildingUnitCount = selectedBuildingUnitList.length;
-
-        //     if (selectedBuildingUnitCount === 0) {
-        //         return 'No items selected';
-        //     } else if (selectedBuildingUnitCount === 1) {
-        //         return '1 item selected';
-        //     } else {
-        //         return selectedBuildingUnitCount + ' items selected';
-        //     }
-        // };
 
         function exportToPdf () {
             var selectedBuildingUnitList = _.filter($scope.buildingUnitList, { selected: true });
@@ -72,6 +61,8 @@ angular.module('officeManagementApp')
         };
 
         function init () {
+            $loading.start('main');
+
             $q.all([
                 getBuildingList(),
                 getBuildingUnitList()
@@ -82,8 +73,20 @@ angular.module('officeManagementApp')
                 $scope.buildingUnitList = buildingUnitList;
                 $scope.buildingUnitFilter.area.list = generateArrBuildingArea(buildingList);
                 $scope.buildingUnitFilter.priceRange.list = generateArrRangeFilter(buildingUnitList, 'price', 500);
-                $scope.buildingUnitFilter.spaceRange.list = generateArrRangeFilter(buildingUnitList, 'space', 200);
+                $scope.buildingUnitFilter.sizeRange.list = generateArrRangeFilter(buildingUnitList, 'size', 200);
+
+                $loading.finish('main');
             });
+        };
+
+        function print () {
+            var selectedBuildingUnitList = _.filter($scope.buildingUnitList, { selected: true });
+            
+            if (selectedBuildingUnitList.length === 0) {
+                // TODO
+            } else {
+                PdfService.createBuildingDetailReport(selectedBuildingUnitList, 'print');
+            }
         };
 
         function generateArrBuildingArea (buildingList) {
@@ -130,8 +133,8 @@ angular.module('officeManagementApp')
             // rangeFilterList.push({
             //     id: 'custom',
             //     name: 'Custom...',
-            //     min: undefined,
-            //     max: undefined
+            //     min: null,
+            //     max: null
             // });
 
             return rangeFilterList;
@@ -229,16 +232,16 @@ angular.module('officeManagementApp')
             return false;
         };
 
-        function validateSpaceFilter (item) {
-            var selectedSpaceRangeList = $scope.buildingUnitFilter.spaceRange.selected;
+        function validateSizeFilter (item) {
+            var selectedSizeRangeList = $scope.buildingUnitFilter.sizeRange.selected;
 
-            if (selectedSpaceRangeList.length === 0) {
+            if (selectedSizeRangeList.length === 0) {
                 return true;
             } else {
-                var space = item.space;
+                var size = item.size;
 
-                for(var i = selectedSpaceRangeList.length - 1; i >= 0; i--) {
-                    if ((space >= selectedSpaceRangeList[i].min) && (space <= selectedSpaceRangeList[i].max)) {
+                for(var i = selectedSizeRangeList.length - 1; i >= 0; i--) {
+                    if ((size >= selectedSizeRangeList[i].min) && (size <= selectedSizeRangeList[i].max)) {
                         return true;
                     }
                 }
@@ -246,6 +249,4 @@ angular.module('officeManagementApp')
 
             return false;
         };
-
-        $scope.init();
 });

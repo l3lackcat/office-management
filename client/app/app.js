@@ -11,7 +11,8 @@ angular.module('officeManagementApp', [
     'validation.match',
     'angularFileUpload',
     'ui.bootstrap',
-    'ui.select'
+    'ui.select',
+    'darthwade.dwLoading'
 ])
     .config(function($routeProvider, $locationProvider) {
         $routeProvider

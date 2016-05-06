@@ -1,6 +1,6 @@
-<div class="container" id="building">
+<div class="container" id="building" dw-loading="building" dw-loading-options="{ text: 'Loading...' }">
   <div class="row">
-    <div class="col-md-7">
+    <div class="col-md-7" dw-loading="update-building" dw-loading-options="{ text: 'Updating...' }">
       <h3 class="inline-button">{{ building.name }}</h3>
       <form class="form-horizontal">
         <h4 class="text-categorization">BUILDING INFO</h4>
@@ -13,22 +13,22 @@
               <p class="form-control-static">{{ building.name }}</p>
             </div>
             <div class="col-xs-2 control-label right">
-              <a href="" title="Edit" ng-click="startEditing('name')">
+              <a href="" class="edit-link" title="Edit" ng-click="startEditingBuilding('name', 'input-building-name')">
                 <span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>
                 <span>Edit</span>
               </a>
             </div>
           </div>
           <div class="row form-group" ng-show="editingProperty == 'name'">
-            <label class="col-xs-3 control-label" for="input-building.name">Name:</label>
+            <label class="col-xs-3 control-label" for="input-building-name">Name:</label>
             <div class="col-xs-7">
-              <input type="text" class="form-control" id="input-building.name" placeholder="Name" ng-model="editingBuilding.name">
+              <input type="text" class="form-control" id="input-building-name" placeholder="Name" ng-model="editingBuilding.name">
             </div>
           </div>
           <div class="row form-group" ng-show="editingProperty == 'name'">
             <div class="col-xs-offset-3 col-xs-9">
-              <button class="btn btn-success" ng-click="saveEditing()">Save</button>
-              <button class="btn btn-danger" ng-click="stopEditing()">Cancel</button>
+              <button class="btn btn-success" ng-click="updateBuilding()">Save</button>
+              <button class="btn btn-danger" ng-click="cancelEditingBuilding()">Cancel</button>
             </div>
           </div>
         </div>
@@ -41,22 +41,88 @@
               <p class="form-control-static">{{ building.area }}</p>
             </div>
             <div class="col-xs-2 control-label right">
-              <a href="" title="Edit" ng-click="startEditing('area')">
+              <a href="" class="edit-link" title="Edit" ng-click="startEditingBuilding('area', 'input-building-area')">
                 <span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>
                 <span>Edit</span>
               </a>
             </div>
           </div>
           <div class="row form-group" ng-show="editingProperty == 'area'">
-            <label class="col-xs-3 control-label" for="input-building.area">Area:</label>
+            <label class="col-xs-3 control-label" for="input-building-area">Area:</label>
             <div class="col-xs-7">
-              <input type="text" class="form-control" id="input-building.area" placeholder="Area" ng-model="editingBuilding.area">
+              <input type="text" class="form-control" id="input-building-area" placeholder="Area" ng-model="editingBuilding.area">
             </div>
           </div>
           <div class="row form-group" ng-show="editingProperty == 'area'">
             <div class="col-xs-offset-3 col-xs-9">
-              <button class="btn btn-success" ng-click="saveEditing()">Save</button>
-              <button class="btn btn-danger" ng-click="stopEditing()">Cancel</button>
+              <button class="btn btn-success" ng-click="updateBuilding()">Save</button>
+              <button class="btn btn-danger" ng-click="cancelEditingBuilding()">Cancel</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- building.trainStation.bts -->
+        <div>
+          <div class="row form-group" ng-class="{ editing: editingProperty != '' }" ng-show="editingProperty != 'trainStation.bts'">
+            <label class="col-xs-3 control-label">BTS:</label>
+            <div class="col-xs-7">
+              <p class="form-control-static">{{ building.trainStation.bts | displayedTrainStation }}</p>
+            </div>
+            <div class="col-xs-2 control-label right">
+              <a href="" class="edit-link" title="Edit" ng-click="startEditingBuilding('trainStation.bts')">
+                <span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>
+                <span>Edit</span>
+              </a>
+            </div>
+          </div>
+          <div class="row form-group" ng-show="editingProperty == 'trainStation.bts'">
+            <label class="col-xs-3 control-label" for="input-building.trainStation.bts">BTS:</label>
+            <div class="col-xs-7">
+              <ui-select multiple tagging ng-model="editingBuilding.trainStation.bts" close-on-select="false">
+                <ui-select-match placeholder="Select station(s)">{{ $item.name }}</ui-select-match>
+                <ui-select-choices repeat="item in trainStation.bts">
+                  <span>{{ item.name }}</span>
+                </ui-select-choices>
+              </ui-select>
+            </div>
+          </div>
+          <div class="row form-group" ng-show="editingProperty == 'trainStation.bts'">
+            <div class="col-xs-offset-3 col-xs-9">
+              <button class="btn btn-success" ng-click="updateBuilding()">Save</button>
+              <button class="btn btn-danger" ng-click="cancelEditingBuilding()">Cancel</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- building.trainStation.mrt -->
+        <div>
+          <div class="row form-group" ng-class="{ editing: editingProperty != '' }" ng-show="editingProperty != 'trainStation.mrt'">
+            <label class="col-xs-3 control-label">MRT:</label>
+            <div class="col-xs-7">
+              <p class="form-control-static">{{ building.trainStation.mrt | displayedTrainStation }}</p>
+            </div>
+            <div class="col-xs-2 control-label right">
+              <a href="" class="edit-link" title="Edit" ng-click="startEditingBuilding('trainStation.mrt')">
+                <span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>
+                <span>Edit</span>
+              </a>
+            </div>
+          </div>
+          <div class="row form-group" ng-show="editingProperty == 'trainStation.mrt'">
+            <label class="col-xs-3 control-label" for="input-building.trainStation.mrt">MRT:</label>
+            <div class="col-xs-7">
+              <ui-select multiple tagging ng-model="editingBuilding.trainStation.mrt" close-on-select="false">
+                <ui-select-match placeholder="Select station(s)">{{ $item.name }}</ui-select-match>
+                <ui-select-choices repeat="item in trainStation.mrt">
+                  <span>{{ item.name }}</span>
+                </ui-select-choices>
+              </ui-select>
+            </div>
+          </div>
+          <div class="row form-group" ng-show="editingProperty == 'trainStation.mrt'">
+            <div class="col-xs-offset-3 col-xs-9">
+              <button class="btn btn-success" ng-click="updateBuilding()">Save</button>
+              <button class="btn btn-danger" ng-click="cancelEditingBuilding()">Cancel</button>
             </div>
           </div>
         </div>
@@ -66,84 +132,84 @@
 
         <!-- building.specs.built -->
         <div>
-          <div class="row form-group" ng-class="{ editing: editingProperty != '' }" ng-show="editingProperty != 'built'">
+          <div class="row form-group" ng-class="{ editing: editingProperty != '' }" ng-show="editingProperty != 'specs.built'">
             <label class="col-xs-3 control-label">Built:</label>
             <div class="col-xs-7">
               <p class="form-control-static">{{ building.specs.built }}</p>
             </div>
             <div class="col-xs-2 control-label right">
-              <a href="" title="Edit" ng-click="startEditing('built')">
+              <a href="" class="edit-link" title="Edit" ng-click="startEditingBuilding('specs.built', 'input-building-specs-built')">
                 <span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>
                 <span>Edit</span>
               </a>
             </div>
           </div>
-          <div class="row form-group" ng-show="editingProperty == 'built'">
-            <label class="col-xs-3 control-label" for="input-building.specs.built">Built:</label>
+          <div class="row form-group" ng-show="editingProperty == 'specs.built'">
+            <label class="col-xs-3 control-label" for="input-building-specs-built">Built:</label>
             <div class="col-xs-7">
-              <input type="text" class="form-control" id="input-building.specs.built" placeholder="Built" ng-model="editingBuilding.specs.built">
+              <input type="text" class="form-control" id="input-building-specs-built" placeholder="Built" ng-model="editingBuilding.specs.built">
             </div>
           </div>
-          <div class="row form-group" ng-show="editingProperty == 'built'">
+          <div class="row form-group" ng-show="editingProperty == 'specs.built'">
             <div class="col-xs-offset-3 col-xs-9">
-              <button class="btn btn-success" ng-click="saveEditing()">Save</button>
-              <button class="btn btn-danger" ng-click="stopEditing()">Cancel</button>
+              <button class="btn btn-success" ng-click="updateBuilding()">Save</button>
+              <button class="btn btn-danger" ng-click="cancelEditingBuilding()">Cancel</button>
             </div>
           </div>
         </div>
 
         <!-- building.specs.storeys -->
         <div>
-          <div class="row form-group" ng-class="{ editing: editingProperty != '' }" ng-show="editingProperty != 'storeys'">
+          <div class="row form-group" ng-class="{ editing: editingProperty != '' }" ng-show="editingProperty != 'specs.storeys'">
             <label class="col-xs-3 control-label">Storeys:</label>
             <div class="col-xs-7">
               <p class="form-control-static">{{ building.specs.storeys }}</p>
             </div>
             <div class="col-xs-2 control-label right">
-              <a href="" title="Edit" ng-click="startEditing('storeys')">
+              <a href="" class="edit-link" title="Edit" ng-click="startEditingBuilding('specs.storeys', 'input-building-specs-storeys')">
                 <span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>
                 <span>Edit</span>
               </a>
             </div>
           </div>
-          <div class="row form-group" ng-show="editingProperty == 'storeys'">
-            <label class="col-xs-3 control-label" for="input-building.specs.storeys">Storeys:</label>
+          <div class="row form-group" ng-show="editingProperty == 'specs.storeys'">
+            <label class="col-xs-3 control-label" for="input-building-specs-storeys">Storeys:</label>
             <div class="col-xs-7">
-              <input type="text" class="form-control" id="input-building.specs.storeys" placeholder="Storeys" ng-model="editingBuilding.specs.storeys">
+              <input type="text" class="form-control" id="input-building-specs-storeys" placeholder="Storeys" ng-model="editingBuilding.specs.storeys">
             </div>
           </div>
-          <div class="row form-group" ng-show="editingProperty == 'storeys'">
+          <div class="row form-group" ng-show="editingProperty == 'specs.storeys'">
             <div class="col-xs-offset-3 col-xs-9">
-              <button class="btn btn-success" ng-click="saveEditing()">Save</button>
-              <button class="btn btn-danger" ng-click="stopEditing()">Cancel</button>
+              <button class="btn btn-success" ng-click="updateBuilding()">Save</button>
+              <button class="btn btn-danger" ng-click="cancelEditingBuilding()">Cancel</button>
             </div>
           </div>
         </div>
 
         <!-- building.specs.ceilingHeight -->
         <div>
-          <div class="row form-group" ng-class="{ editing: editingProperty != '' }" ng-show="editingProperty != 'ceilingHeight'">
+          <div class="row form-group" ng-class="{ editing: editingProperty != '' }" ng-show="editingProperty != 'specs.ceilingHeight'">
             <label class="col-xs-3 control-label">Ceiling Height:</label>
             <div class="col-xs-7">
               <p class="form-control-static">{{ building.specs.ceilingHeight }}</p>
             </div>
             <div class="col-xs-2 control-label right">
-              <a href="" title="Edit" ng-click="startEditing('ceilingHeight')">
+              <a href="" class="edit-link" title="Edit" ng-click="startEditingBuilding('specs.ceilingHeight', 'input-building-specs-ceilingHeight')">
                 <span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>
                 <span>Edit</span>
               </a>
             </div>
           </div>
-          <div class="row form-group" ng-show="editingProperty == 'ceilingHeight'">
-            <label class="col-xs-3 control-label" for="input-building.specs.ceilingHeight">Ceiling Height:</label>
+          <div class="row form-group" ng-show="editingProperty == 'specs.ceilingHeight'">
+            <label class="col-xs-3 control-label" for="input-building-specs-ceilingHeight">Ceiling Height:</label>
             <div class="col-xs-7">
-              <input type="text" class="form-control" id="input-building.specs.ceilingHeight" placeholder="Ceiling Height" ng-model="editingBuilding.specs.ceilingHeight">
+              <input type="text" class="form-control" id="input-building-specs-ceilingHeight" placeholder="Ceiling Height" ng-model="editingBuilding.specs.ceilingHeight">
             </div>
           </div>
-          <div class="row form-group" ng-show="editingProperty == 'ceilingHeight'">
+          <div class="row form-group" ng-show="editingProperty == 'specs.ceilingHeight'">
             <div class="col-xs-offset-3 col-xs-9">
-              <button class="btn btn-success" ng-click="saveEditing()">Save</button>
-              <button class="btn btn-danger" ng-click="stopEditing()">Cancel</button>
+              <button class="btn btn-success" ng-click="updateBuilding()">Save</button>
+              <button class="btn btn-danger" ng-click="cancelEditingBuilding()">Cancel</button>
             </div>
           </div>
         </div>
@@ -153,28 +219,84 @@
 
         <!-- building.lifts.passenger -->
         <div>
-          <div class="row form-group" ng-class="{ editing: editingProperty != '' }" ng-show="editingProperty != 'passenger'">
+          <div class="row form-group" ng-class="{ editing: editingProperty != '' }" ng-show="editingProperty != 'lifts.passenger'">
             <label class="col-xs-3 control-label">Passenger:</label>
             <div class="col-xs-7">
               <p class="form-control-static">{{ building.lifts.passenger }}</p>
             </div>
             <div class="col-xs-2 control-label right">
-              <a href="" title="Edit" ng-click="startEditing('passenger')">
+              <a href="" class="edit-link" title="Edit" ng-click="startEditingBuilding('lifts.passenger', 'input-building-lifts-passenger')">
                 <span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>
                 <span>Edit</span>
               </a>
             </div>
           </div>
-          <div class="row form-group" ng-show="editingProperty == 'passenger'">
-            <label class="col-xs-3 control-label" for="input-building.lifts.passenger">Passenger:</label>
+          <div class="row form-group" ng-show="editingProperty == 'lifts.passenger'">
+            <label class="col-xs-3 control-label" for="input-building-lifts-passenger">Passenger:</label>
             <div class="col-xs-7">
-              <input type="text" class="form-control" id="input-building.lifts.passenger" placeholder="Passenger" ng-model="editingBuilding.lifts.passenger">
+              <input type="text" class="form-control" id="input-building-lifts-passenger" placeholder="Passenger" ng-model="editingBuilding.lifts.passenger">
             </div>
           </div>
-          <div class="row form-group" ng-show="editingProperty == 'passenger'">
+          <div class="row form-group" ng-show="editingProperty == 'lifts.passenger'">
             <div class="col-xs-offset-3 col-xs-9">
-              <button class="btn btn-success" ng-click="saveEditing()">Save</button>
-              <button class="btn btn-danger" ng-click="stopEditing()">Cancel</button>
+              <button class="btn btn-success" ng-click="updateBuilding()">Save</button>
+              <button class="btn btn-danger" ng-click="cancelEditingBuilding()">Cancel</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- building.lifts.service -->
+        <div>
+          <div class="row form-group" ng-class="{ editing: editingProperty != '' }" ng-show="editingProperty != 'lifts.service'">
+            <label class="col-xs-3 control-label">Service:</label>
+            <div class="col-xs-7">
+              <p class="form-control-static">{{ building.lifts.service }}</p>
+            </div>
+            <div class="col-xs-2 control-label right">
+              <a href="" class="edit-link" title="Edit" ng-click="startEditingBuilding('lifts.service', 'input-building-lifts-service')">
+                <span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>
+                <span>Edit</span>
+              </a>
+            </div>
+          </div>
+          <div class="row form-group" ng-show="editingProperty == 'lifts.service'">
+            <label class="col-xs-3 control-label" for="input-building-lifts-service">Service:</label>
+            <div class="col-xs-7">
+              <input type="text" class="form-control" id="input-building-lifts-service" placeholder="Passenger" ng-model="editingBuilding.lifts.service">
+            </div>
+          </div>
+          <div class="row form-group" ng-show="editingProperty == 'lifts.service'">
+            <div class="col-xs-offset-3 col-xs-9">
+              <button class="btn btn-success" ng-click="updateBuilding()">Save</button>
+              <button class="btn btn-danger" ng-click="cancelEditingBuilding()">Cancel</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- building.lifts.parking -->
+        <div>
+          <div class="row form-group" ng-class="{ editing: editingProperty != '' }" ng-show="editingProperty != 'lifts.parking'">
+            <label class="col-xs-3 control-label">Parking:</label>
+            <div class="col-xs-7">
+              <p class="form-control-static">{{ building.lifts.parking }}</p>
+            </div>
+            <div class="col-xs-2 control-label right">
+              <a href="" class="edit-link" title="Edit" ng-click="startEditingBuilding('lifts.parking', 'input-building-lifts-parking')">
+                <span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>
+                <span>Edit</span>
+              </a>
+            </div>
+          </div>
+          <div class="row form-group" ng-show="editingProperty == 'lifts.parking'">
+            <label class="col-xs-3 control-label" for="input-building-lifts-parking">Parking:</label>
+            <div class="col-xs-7">
+              <input type="text" class="form-control" id="input-building-lifts-parking" placeholder="Passenger" ng-model="editingBuilding.lifts.parking">
+            </div>
+          </div>
+          <div class="row form-group" ng-show="editingProperty == 'lifts.parking'">
+            <div class="col-xs-offset-3 col-xs-9">
+              <button class="btn btn-success" ng-click="updateBuilding()">Save</button>
+              <button class="btn btn-danger" ng-click="cancelEditingBuilding()">Cancel</button>
             </div>
           </div>
         </div>
@@ -184,84 +306,84 @@
 
         <!-- building.lease.leaseTerm -->
         <div>
-          <div class="row form-group" ng-class="{ editing: editingProperty != '' }" ng-show="editingProperty != 'leaseTerm'">
+          <div class="row form-group" ng-class="{ editing: editingProperty != '' }" ng-show="editingProperty != 'lease.leaseTerm'">
             <label class="col-xs-3 control-label">Lease Term:</label>
             <div class="col-xs-7">
               <p class="form-control-static">{{ building.lease.leaseTerm }}</p>
             </div>
             <div class="col-xs-2 control-label right">
-              <a href="" title="Edit" ng-click="startEditing('leaseTerm')">
+              <a href="" class="edit-link" title="Edit" ng-click="startEditingBuilding('lease.leaseTerm', 'input-building-lease-leaseTerm')">
                 <span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>
                 <span>Edit</span>
               </a>
             </div>
           </div>
-          <div class="row form-group" ng-show="editingProperty == 'leaseTerm'">
-            <label class="col-xs-3 control-label" for="input-building.lease.leaseTerm">Lease Term:</label>
+          <div class="row form-group" ng-show="editingProperty == 'lease.leaseTerm'">
+            <label class="col-xs-3 control-label" for="input-building-lease-leaseTerm">Lease Term:</label>
             <div class="col-xs-7">
-              <input type="text" class="form-control" id="input-building.lease.leaseTerm" placeholder="Lease Term" ng-model="editingBuilding.lease.leaseTerm">
+              <input type="text" class="form-control" id="input-building-lease-leaseTerm" placeholder="Lease Term" ng-model="editingBuilding.lease.leaseTerm">
             </div>
           </div>
-          <div class="row form-group" ng-show="editingProperty == 'leaseTerm'">
+          <div class="row form-group" ng-show="editingProperty == 'lease.leaseTerm'">
             <div class="col-xs-offset-3 col-xs-9">
-              <button class="btn btn-success" ng-click="saveEditing()">Save</button>
-              <button class="btn btn-danger" ng-click="stopEditing()">Cancel</button>
+              <button class="btn btn-success" ng-click="updateBuilding()">Save</button>
+              <button class="btn btn-danger" ng-click="cancelEditingBuilding()">Cancel</button>
             </div>
           </div>
         </div>
 
         <!-- building.lease.deposit -->
         <div>
-          <div class="row form-group" ng-class="{ editing: editingProperty != '' }" ng-show="editingProperty != 'deposit'">
+          <div class="row form-group" ng-class="{ editing: editingProperty != '' }" ng-show="editingProperty != 'lease.deposit'">
             <label class="col-xs-3 control-label">Deposit:</label>
             <div class="col-xs-7">
               <p class="form-control-static">{{ building.lease.deposit }}</p>
             </div>
             <div class="col-xs-2 control-label right">
-              <a href="" title="Edit" ng-click="startEditing('deposit')">
+              <a href="" class="edit-link" title="Edit" ng-click="startEditingBuilding('lease.deposit', 'input-building-lease-deposit')">
                 <span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>
                 <span>Edit</span>
               </a>
             </div>
           </div>
-          <div class="row form-group" ng-show="editingProperty == 'deposit'">
-            <label class="col-xs-3 control-label" for="input-building.lease.deposit">Deposit:</label>
+          <div class="row form-group" ng-show="editingProperty == 'lease.deposit'">
+            <label class="col-xs-3 control-label" for="input-building-lease-deposit">Deposit:</label>
             <div class="col-xs-7">
-              <input type="text" class="form-control" id="input-building.lease.deposit" placeholder="Deposit" ng-model="editingBuilding.lease.deposit">
+              <input type="text" class="form-control" id="input-building-lease-deposit" placeholder="Deposit" ng-model="editingBuilding.lease.deposit">
             </div>
           </div>
-          <div class="row form-group" ng-show="editingProperty == 'deposit'">
+          <div class="row form-group" ng-show="editingProperty == 'lease.deposit'">
             <div class="col-xs-offset-3 col-xs-9">
-              <button class="btn btn-success" ng-click="saveEditing()">Save</button>
-              <button class="btn btn-danger" ng-click="stopEditing()">Cancel</button>
+              <button class="btn btn-success" ng-click="updateBuilding()">Save</button>
+              <button class="btn btn-danger" ng-click="cancelEditingBuilding()">Cancel</button>
             </div>
           </div>
         </div>
 
         <!-- building.lease.advanceRental -->
         <div>
-          <div class="row form-group" ng-class="{ editing: editingProperty != '' }" ng-show="editingProperty != 'advanceRental'">
+          <div class="row form-group" ng-class="{ editing: editingProperty != '' }" ng-show="editingProperty != 'lease.advanceRental'">
             <label class="col-xs-3 control-label">Advance Rental:</label>
             <div class="col-xs-7">
               <p class="form-control-static">{{ building.lease.advanceRental }}</p>
             </div>
             <div class="col-xs-2 control-label right">
-              <a href="" title="Edit" ng-click="startEditing('advanceRental')">
+              <a href="" class="edit-link" title="Edit" ng-click="startEditingBuilding('lease.advanceRental', 'input-building-lease-advanceRental')">
                 <span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>
                 <span>Edit</span>
               </a>
             </div>
           </div>
-          <div class="row form-group" ng-show="editingProperty == 'advanceRental'">
-            <label class="col-xs-3 control-label" for="input-building.lease.advanceRental">Advance Rental:</label>
+          <div class="row form-group" ng-show="editingProperty == 'lease.advanceRental'">
+            <label class="col-xs-3 control-label" for="input-building-lease-advanceRental">Advance Rental:</label>
             <div class="col-xs-7">
-              <input type="text" class="form-control" id="input-building.lease.advanceRental" placeholder="Advance Rental" ng-model="editingBuilding.lease.advanceRental">
+              <input type="text" class="form-control" id="input-building-lease-advanceRental" placeholder="Advance Rental" ng-model="editingBuilding.lease.advanceRental">
             </div>
           </div>
-          <div class="row form-group" ng-show="editingProperty == 'advanceRental'">
+          <div class="row form-group" ng-show="editingProperty == 'lease.advanceRental'">
             <div class="col-xs-offset-3 col-xs-9">
-              <button class="btn btn-success" ng-click="saveEditing()">Save</button>
-              <button class="btn btn-danger" ng-click="stopEditing()">Cancel</button>
+              <button class="btn btn-success" ng-click="updateBuilding()">Save</button>
+              <button class="btn btn-danger" ng-click="cancelEditingBuilding()">Cancel</button>
             </div>
           </div>
         </div>
@@ -271,84 +393,112 @@
 
         <!-- building.parking.totalSpaces -->
         <div>
-          <div class="row form-group" ng-class="{ editing: editingProperty != '' }" ng-show="editingProperty != 'totalSpaces'">
+          <div class="row form-group" ng-class="{ editing: editingProperty != '' }" ng-show="editingProperty != 'parking.totalSpaces'">
             <label class="col-xs-3 control-label">Total Spaces:</label>
             <div class="col-xs-7">
               <p class="form-control-static">{{ building.parking.totalSpaces }}</p>
             </div>
             <div class="col-xs-2 control-label right">
-              <a href="" title="Edit" ng-click="startEditing('totalSpaces')">
+              <a href="" class="edit-link" title="Edit" ng-click="startEditingBuilding('parking.totalSpaces', 'input-building-parking-totalSpaces')">
                 <span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>
                 <span>Edit</span>
               </a>
             </div>
           </div>
-          <div class="row form-group" ng-show="editingProperty == 'totalSpaces'">
-            <label class="col-xs-3 control-label" for="input-building.parking.totalSpaces">Total Spaces:</label>
+          <div class="row form-group" ng-show="editingProperty == 'parking.totalSpaces'">
+            <label class="col-xs-3 control-label" for="input-building-parking-totalSpaces">Total Spaces:</label>
             <div class="col-xs-7">
-              <input type="text" class="form-control" id="input-building.parking.totalSpaces" placeholder="Total Spaces" ng-model="editingBuilding.parking.totalSpaces">
+              <input type="text" class="form-control" id="input-building-parking-totalSpaces" placeholder="Total Spaces" ng-model="editingBuilding.parking.totalSpaces">
             </div>
           </div>
-          <div class="row form-group" ng-show="editingProperty == 'totalSpaces'">
+          <div class="row form-group" ng-show="editingProperty == 'parking.totalSpaces'">
             <div class="col-xs-offset-3 col-xs-9">
-              <button class="btn btn-success" ng-click="saveEditing()">Save</button>
-              <button class="btn btn-danger" ng-click="stopEditing()">Cancel</button>
+              <button class="btn btn-success" ng-click="updateBuilding()">Save</button>
+              <button class="btn btn-danger" ng-click="cancelEditingBuilding()">Cancel</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- building.parking.tenant -->
+        <div>
+          <div class="row form-group" ng-class="{ editing: editingProperty != '' }" ng-show="editingProperty != 'parking.tenant'">
+            <label class="col-xs-3 control-label">Tenant:</label>
+            <div class="col-xs-7">
+              <p class="form-control-static">{{ building.parking.tenant }}</p>
+            </div>
+            <div class="col-xs-2 control-label right">
+              <a href="" class="edit-link" title="Edit" ng-click="startEditingBuilding('parking.tenant', 'input-building-parking-tenant')">
+                <span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>
+                <span>Edit</span>
+              </a>
+            </div>
+          </div>
+          <div class="row form-group" ng-show="editingProperty == 'parking.tenant'">
+            <label class="col-xs-3 control-label" for="input-building-parking-tenant">Tenant:</label>
+            <div class="col-xs-7">
+              <input type="text" class="form-control" id="input-building-parking-tenant" placeholder="Total Spaces" ng-model="editingBuilding.parking.tenant">
+            </div>
+          </div>
+          <div class="row form-group" ng-show="editingProperty == 'parking.tenant'">
+            <div class="col-xs-offset-3 col-xs-9">
+              <button class="btn btn-success" ng-click="updateBuilding()">Save</button>
+              <button class="btn btn-danger" ng-click="cancelEditingBuilding()">Cancel</button>
             </div>
           </div>
         </div>
 
         <!-- building.parking.additionalParking -->
         <div>
-          <div class="row form-group" ng-class="{ editing: editingProperty != '' }" ng-show="editingProperty != 'additionalParking'">
+          <div class="row form-group" ng-class="{ editing: editingProperty != '' }" ng-show="editingProperty != 'parking.additionalParking'">
             <label class="col-xs-3 control-label">Additional Parking:</label>
             <div class="col-xs-7">
               <p class="form-control-static">{{ building.parking.additionalParking }}</p>
             </div>
             <div class="col-xs-2 control-label right">
-              <a href="" title="Edit" ng-click="startEditing('additionalParking')">
+              <a href="" class="edit-link" title="Edit" ng-click="startEditingBuilding('parking.additionalParking', 'input-building-parking-additionalParking')">
                 <span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>
                 <span>Edit</span>
               </a>
             </div>
           </div>
-          <div class="row form-group" ng-show="editingProperty == 'additionalParking'">
-            <label class="col-xs-3 control-label" for="input-building.parking.additionalParking">Additional Parking:</label>
+          <div class="row form-group" ng-show="editingProperty == 'parking.additionalParking'">
+            <label class="col-xs-3 control-label" for="input-building-parking-additionalParking">Additional Parking:</label>
             <div class="col-xs-7">
-              <input type="text" class="form-control" id="input-building.parking.additionalParking" placeholder="Additional Parking" ng-model="editingBuilding.parking.additionalParking">
+              <input type="text" class="form-control" id="input-building-parking-additionalParking" placeholder="Additional Parking" ng-model="editingBuilding.parking.additionalParking">
             </div>
           </div>
-          <div class="row form-group" ng-show="editingProperty == 'additionalParking'">
+          <div class="row form-group" ng-show="editingProperty == 'parking.additionalParking'">
             <div class="col-xs-offset-3 col-xs-9">
-              <button class="btn btn-success" ng-click="saveEditing()">Save</button>
-              <button class="btn btn-danger" ng-click="stopEditing()">Cancel</button>
+              <button class="btn btn-success" ng-click="updateBuilding()">Save</button>
+              <button class="btn btn-danger" ng-click="cancelEditingBuilding()">Cancel</button>
             </div>
           </div>
         </div>
 
         <!-- building.parking.visitorParking -->
         <div>
-          <div class="row form-group" ng-class="{ editing: editingProperty != '' }" ng-show="editingProperty != 'visitorParking'">
+          <div class="row form-group" ng-class="{ editing: editingProperty != '' }" ng-show="editingProperty != 'parking.visitorParking'">
             <label class="col-xs-3 control-label">Visitor Parking:</label>
             <div class="col-xs-7">
               <p class="form-control-static">{{ building.parking.visitorParking }}</p>
             </div>
             <div class="col-xs-2 control-label right">
-              <a href="" title="Edit" ng-click="startEditing('visitorParking')">
+              <a href="" class="edit-link" title="Edit" ng-click="startEditingBuilding('parking.visitorParking', 'input-building-parking-visitorParking')">
                 <span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>
                 <span>Edit</span>
               </a>
             </div>
           </div>
-          <div class="row form-group" ng-show="editingProperty == 'visitorParking'">
-            <label class="col-xs-3 control-label" for="input-building.parking.visitorParking">Visitor Parking:</label>
+          <div class="row form-group" ng-show="editingProperty == 'parking.visitorParking'">
+            <label class="col-xs-3 control-label" for="input-building-parking-visitorParking">Visitor Parking:</label>
             <div class="col-xs-7">
-              <input type="text" class="form-control" id="input-building.parking.visitorParking" placeholder="Visitor Parking" ng-model="editingBuilding.parking.visitorParking">
+              <input type="text" class="form-control" id="input-building-parking-visitorParking" placeholder="Visitor Parking" ng-model="editingBuilding.parking.visitorParking">
             </div>
           </div>
-          <div class="row form-group" ng-show="editingProperty == 'visitorParking'">
+          <div class="row form-group" ng-show="editingProperty == 'parking.visitorParking'">
             <div class="col-xs-offset-3 col-xs-9">
-              <button class="btn btn-success" ng-click="saveEditing()">Save</button>
-              <button class="btn btn-danger" ng-click="stopEditing()">Cancel</button>
+              <button class="btn btn-success" ng-click="updateBuilding()">Save</button>
+              <button class="btn btn-danger" ng-click="cancelEditingBuilding()">Cancel</button>
             </div>
           </div>
         </div>
@@ -358,150 +508,150 @@
 
         <!-- building.utilities.acType -->
         <div>
-          <div class="row form-group" ng-class="{ editing: editingProperty != '' }" ng-show="editingProperty != 'acType'">
+          <div class="row form-group" ng-class="{ editing: editingProperty != '' }" ng-show="editingProperty != 'utilities.acType'">
             <label class="col-xs-3 control-label">A/C Type:</label>
             <div class="col-xs-7">
               <p class="form-control-static">{{ building.utilities.acType }}</p>
             </div>
             <div class="col-xs-2 control-label right">
-              <a href="" title="Edit" ng-click="startEditing('acType')">
+              <a href="" class="edit-link" title="Edit" ng-click="startEditingBuilding('utilities.acType', 'input-building-utilities-acType')">
                 <span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>
                 <span>Edit</span>
               </a>
             </div>
           </div>
-          <div class="row form-group" ng-show="editingProperty == 'acType'">
-            <label class="col-xs-3 control-label" for="input-building.utilities.acType">A/C Type:</label>
+          <div class="row form-group" ng-show="editingProperty == 'utilities.acType'">
+            <label class="col-xs-3 control-label" for="input-building-utilities-acType">A/C Type:</label>
             <div class="col-xs-7">
-              <input type="text" class="form-control" id="input-building.utilities.acType" placeholder="A/C Type" ng-model="editingBuilding.utilities.acType">
+              <input type="text" class="form-control" id="input-building-utilities-acType" placeholder="A/C Type" ng-model="editingBuilding.utilities.acType">
             </div>
           </div>
-          <div class="row form-group" ng-show="editingProperty == 'acType'">
+          <div class="row form-group" ng-show="editingProperty == 'utilities.acType'">
             <div class="col-xs-offset-3 col-xs-9">
-              <button class="btn btn-success" ng-click="saveEditing()">Save</button>
-              <button class="btn btn-danger" ng-click="stopEditing()">Cancel</button>
+              <button class="btn btn-success" ng-click="updateBuilding()">Save</button>
+              <button class="btn btn-danger" ng-click="cancelEditingBuilding()">Cancel</button>
             </div>
           </div>
         </div>
 
         <!-- building.utilities.acCharges -->
         <div>
-          <div class="row form-group" ng-class="{ editing: editingProperty != '' }" ng-show="editingProperty != 'acCharges'">
+          <div class="row form-group" ng-class="{ editing: editingProperty != '' }" ng-show="editingProperty != 'utilities.acCharges'">
             <label class="col-xs-3 control-label">A/C Charges:</label>
             <div class="col-xs-7">
               <p class="form-control-static">{{ building.utilities.acCharges }}</p>
             </div>
             <div class="col-xs-2 control-label right">
-              <a href="" title="Edit" ng-click="startEditing('acCharges')">
+              <a href="" class="edit-link" title="Edit" ng-click="startEditingBuilding('utilities.acCharges', 'input-building-utilities-acCharges')">
                 <span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>
                 <span>Edit</span>
               </a>
             </div>
           </div>
-          <div class="row form-group" ng-show="editingProperty == 'acCharges'">
-            <label class="col-xs-3 control-label" for="input-building.utilities.acCharges">A/C Charges:</label>
+          <div class="row form-group" ng-show="editingProperty == 'utilities.acCharges'">
+            <label class="col-xs-3 control-label" for="input-building-utilities-acCharges">A/C Charges:</label>
             <div class="col-xs-7">
-              <textarea class="form-control" id="input-building.utilities.acCharges" rows="4" ng-model="editingBuilding.utilities.acCharges"></textarea>
+              <textarea class="form-control" id="input-building-utilities-acCharges" rows="4" ng-model="editingBuilding.utilities.acCharges"></textarea>
             </div>
           </div>
-          <div class="row form-group" ng-show="editingProperty == 'acCharges'">
+          <div class="row form-group" ng-show="editingProperty == 'utilities.acCharges'">
             <div class="col-xs-offset-3 col-xs-9">
-              <button class="btn btn-success" ng-click="saveEditing()">Save</button>
-              <button class="btn btn-danger" ng-click="stopEditing()">Cancel</button>
+              <button class="btn btn-success" ng-click="updateBuilding()">Save</button>
+              <button class="btn btn-danger" ng-click="cancelEditingBuilding()">Cancel</button>
             </div>
           </div>
         </div>
 
         <!-- building.utilities.telephone -->
         <div>
-          <div class="row form-group" ng-class="{ editing: editingProperty != '' }" ng-show="editingProperty != 'telephone'">
+          <div class="row form-group" ng-class="{ editing: editingProperty != '' }" ng-show="editingProperty != 'utilities.telephone'">
             <label class="col-xs-3 control-label">Telephone:</label>
             <div class="col-xs-7">
               <p class="form-control-static">{{ building.utilities.telephone }}</p>
             </div>
             <div class="col-xs-2 control-label right">
-              <a href="" title="Edit" ng-click="startEditing('telephone')">
+              <a href="" class="edit-link" title="Edit" ng-click="startEditingBuilding('utilities.telephone', 'input-building-utilities-telephone')">
                 <span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>
                 <span>Edit</span>
               </a>
             </div>
           </div>
-          <div class="row form-group" ng-show="editingProperty == 'telephone'">
-            <label class="col-xs-3 control-label" for="input-building.utilities.telephone">Telephone:</label>
+          <div class="row form-group" ng-show="editingProperty == 'utilities.telephone'">
+            <label class="col-xs-3 control-label" for="input-building-utilities-telephone">Telephone:</label>
             <div class="col-xs-7">
-              <textarea class="form-control" id="input-building.utilities.telephone" rows="4" ng-model="editingBuilding.utilities.telephone"></textarea>
+              <textarea class="form-control" id="input-building-utilities-telephone" rows="4" ng-model="editingBuilding.utilities.telephone"></textarea>
             </div>
           </div>
-          <div class="row form-group" ng-show="editingProperty == 'telephone'">
+          <div class="row form-group" ng-show="editingProperty == 'utilities.telephone'">
             <div class="col-xs-offset-3 col-xs-9">
-              <button class="btn btn-success" ng-click="saveEditing()">Save</button>
-              <button class="btn btn-danger" ng-click="stopEditing()">Cancel</button>
+              <button class="btn btn-success" ng-click="updateBuilding()">Save</button>
+              <button class="btn btn-danger" ng-click="cancelEditingBuilding()">Cancel</button>
             </div>
           </div>
         </div>
 
         <!-- building.utilities.electricity -->
         <div>
-          <div class="row form-group" ng-class="{ editing: editingProperty != '' }" ng-show="editingProperty != 'electricity'">
+          <div class="row form-group" ng-class="{ editing: editingProperty != '' }" ng-show="editingProperty != 'utilities.electricity'">
             <label class="col-xs-3 control-label">Electricity:</label>
             <div class="col-xs-7">
               <p class="form-control-static">{{ building.utilities.electricity }}</p>
             </div>
             <div class="col-xs-2 control-label right">
-              <a href="" title="Edit" ng-click="startEditing('electricity')">
+              <a href="" class="edit-link" title="Edit" ng-click="startEditingBuilding('utilities.electricity', 'input-building-utilities-electricity')">
                 <span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>
                 <span>Edit</span>
               </a>
             </div>
           </div>
-          <div class="row form-group" ng-show="editingProperty == 'electricity'">
-            <label class="col-xs-3 control-label" for="input-building.utilities.electricity">Electricity:</label>
+          <div class="row form-group" ng-show="editingProperty == 'utilities.electricity'">
+            <label class="col-xs-3 control-label" for="input-building-utilities-electricity">Electricity:</label>
             <div class="col-xs-7">
-              <input type="text" class="form-control" id="input-building.utilities.electricity" placeholder="Electricity" ng-model="editingBuilding.utilities.electricity">
+              <input type="text" class="form-control" id="input-building-utilities-electricity" placeholder="Electricity" ng-model="editingBuilding.utilities.electricity">
             </div>
           </div>
-          <div class="row form-group" ng-show="editingProperty == 'electricity'">
+          <div class="row form-group" ng-show="editingProperty == 'utilities.electricity'">
             <div class="col-xs-offset-3 col-xs-9">
-              <button class="btn btn-success" ng-click="saveEditing()">Save</button>
-              <button class="btn btn-danger" ng-click="stopEditing()">Cancel</button>
+              <button class="btn btn-success" ng-click="updateBuilding()">Save</button>
+              <button class="btn btn-danger" ng-click="cancelEditingBuilding()">Cancel</button>
             </div>
           </div>
         </div>
 
         <!-- building.utilities.waterCharge -->
         <div>
-          <div class="row form-group" ng-class="{ editing: editingProperty != '' }" ng-show="editingProperty != 'waterCharge'">
+          <div class="row form-group" ng-class="{ editing: editingProperty != '' }" ng-show="editingProperty != 'utilities.waterCharge'">
             <label class="col-xs-3 control-label">Water Charge:</label>
             <div class="col-xs-7">
               <p class="form-control-static">{{ building.utilities.waterCharge }}</p>
             </div>
             <div class="col-xs-2 control-label right">
-              <a href="" title="Edit" ng-click="startEditing('waterCharge')">
+              <a href="" class="edit-link" title="Edit" ng-click="startEditingBuilding('utilities.waterCharge', 'input-building-utilities-waterCharge')">
                 <span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>
                 <span>Edit</span>
               </a>
             </div>
           </div>
-          <div class="row form-group" ng-show="editingProperty == 'waterCharge'">
-            <label class="col-xs-3 control-label" for="input-building.utilities.waterCharge">Water Charge:</label>
+          <div class="row form-group" ng-show="editingProperty == 'utilities.waterCharge'">
+            <label class="col-xs-3 control-label" for="input-building-utilities-waterCharge">Water Charge:</label>
             <div class="col-xs-7">
-              <input type="text" class="form-control" id="input-building.utilities.waterCharge" placeholder="Water Charge" ng-model="editingBuilding.utilities.waterCharge">
+              <input type="text" class="form-control" id="input-building-utilities-waterCharge" placeholder="Water Charge" ng-model="editingBuilding.utilities.waterCharge">
             </div>
           </div>
-          <div class="row form-group" ng-show="editingProperty == 'waterCharge'">
+          <div class="row form-group" ng-show="editingProperty == 'utilities.waterCharge'">
             <div class="col-xs-offset-3 col-xs-9">
-              <button class="btn btn-success" ng-click="saveEditing()">Save</button>
-              <button class="btn btn-danger" ng-click="stopEditing()">Cancel</button>
+              <button class="btn btn-success" ng-click="updateBuilding()">Save</button>
+              <button class="btn btn-danger" ng-click="cancelEditingBuilding()">Cancel</button>
             </div>
           </div>
         </div>
       </form>
     </div>
-    <div class="col-md-5">
+    <div class="col-md-5" dw-loading="update-building-unit" dw-loading-options="{ text: 'Updating...' }">
       <div class="row">
         <div class="col-sm-12">
           <h3 class="inline-button">Units</h3>
-          <div class="btn-group pull-right" role="group">
+          <div class=" pull-right">
             <button type="button" class="btn btn-primary" ng-click="openBuildingUnit()">Add</button>
 
             <div class="btn-group" uib-dropdown is-open="actionButton.isOpen">
@@ -513,7 +663,9 @@
                 <li role="menuitem"><a href="#" ng-click="setBuildingUnitAvaillable(true)">Set as available</a></li>
                 <li role="menuitem"><a href="#" ng-click="setBuildingUnitAvaillable(false)">Set as unavailble</a></li>
                 <li class="divider"></li>
-                <li role="menuitem"><a href="#" ng-click="exportToPdf">Export to PDF</a></li>
+                <li role="menuitem"><a href="#" ng-click="exportToPdf()">Export to PDF</a></li>
+                <li class="divider"></li>
+                <li role="menuitem"><a href="#" ng-click="print()">Print</a></li>
               </ul>
             </div>
           </div>
@@ -531,7 +683,7 @@
                 
                 <th>Unit</th>
                 <th>Fl.</th>
-                <th class="right">Space</th>
+                <th class="right">Size</th>
                 <th class="right">Price</th>
                 <th class="right">Net Price</th>
                 <th>&nbsp;</th>
@@ -547,11 +699,11 @@
                 </td>
                 <td>{{ buildingUnit.name }}</td>
                 <td>{{ buildingUnit.floor }}</td>
-                <td class="right">{{ buildingUnit.space | number:2 }}</td>
+                <td class="right">{{ buildingUnit.size | number:2 }}</td>
                 <td class="right">{{ buildingUnit.price | number:2 }}</td>
-                <td class="right">{{ (buildingUnit.space * buildingUnit.price) | number:2 }}</td>
+                <td class="right">{{ (buildingUnit.size * buildingUnit.price) | number:2 }}</td>
                 <td>
-                  <a href="" title="Edit" ng-click="">
+                  <a href="" title="Edit" ng-click="openBuildingUnit(buildingUnit._id)">
                     <span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>
                   </a>
                 </td>

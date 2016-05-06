@@ -1,4 +1,4 @@
-<div class="container" id="main">
+<div class="container" id="main" dw-loading="main" dw-loading-options="{ text: 'Loading...' }">
   <div class="row">
     <div class="col-md-2">
       <h3 class="inline-button">Filters</h3>
@@ -8,10 +8,10 @@
           <input type="text" class="form-control input-sm" placeholder="Building Name" ng-model="buildingUnitFilter.buildingName" />
         </div>
         <div class="form-group">
-          <label>Space</label>
-          <ui-select multiple ng-model="buildingUnitFilter.spaceRange.selected" close-on-select="false">
-            <ui-select-match placeholder="Select space range(s)">{{ $item.name }}</ui-select-match>
-            <ui-select-choices repeat="item in buildingUnitFilter.spaceRange.list">
+          <label>Size</label>
+          <ui-select multiple ng-model="buildingUnitFilter.sizeRange.selected" close-on-select="false">
+            <ui-select-match placeholder="Select size range(s)">{{ $item.name }}</ui-select-match>
+            <ui-select-choices repeat="item in buildingUnitFilter.sizeRange.list">
               <span>{{ item.name }}</span>
             </ui-select-choices>
           </ui-select>
@@ -40,7 +40,8 @@
       <div class="row">
         <div class="col-sm-12">
           <h3 class="inline-button">Results</h3>
-          <div class="btn-group pull-right" uib-dropdown is-open="actionButton.isOpen">
+          <div class="pull-right">
+            <a href="/import-building" class="btn btn-primary" role="button">Import</a>
             <button id="single-button" type="button" class="btn btn-primary" uib-dropdown-toggle ng-disabled="actionButton.disabled">
               <span>Action</span>
               <span class="caret"></span>
@@ -49,7 +50,9 @@
               <li role="menuitem"><a href="#" ng-click="setBuildingUnitAvaillable(true)">Set as available</a></li>
               <li role="menuitem"><a href="#" ng-click="setBuildingUnitAvaillable(false)">Set as unavailble</a></li>
               <li class="divider"></li>
-              <li role="menuitem"><a href="#" ng-click="exportToPdf">Export to PDF</a></li>
+              <li role="menuitem"><a href="#" ng-click="exportToPdf()">Export to PDF</a></li>
+              <li class="divider"></li>
+              <li role="menuitem"><a href="#" ng-click="print()">Print</a></li>
             </ul>
           </div>
         </div>
@@ -67,13 +70,13 @@
                 <th>Area</th>
                 <th>Unit</th>
                 <th>Fl.</th>
-                <th class="right">Space</th>
+                <th class="right">Size</th>
                 <th class="right">Price</th>
                 <th class="right">Net Price</th>
               </tr>
             </thead>
             <tbody>
-              <tr ng-repeat="buildingUnit in buildingUnitList | filter:applyFilter">
+              <tr ng-repeat="buildingUnit in buildingUnitList | filter:applyFilter | orderBy: 'building.name'">
                 <td>
                   <input type="checkbox" ng-model="buildingUnit.selected" ng-change="updateBuildingUnitSelection()" />
                 </td>
@@ -86,9 +89,9 @@
                 <td>{{ buildingUnit.building.area }}</td>
                 <td>{{ buildingUnit.name }}</td>
                 <td>{{ buildingUnit.floor }}</td>
-                <td class="right">{{ buildingUnit.space | number:2 }}</td>
+                <td class="right">{{ buildingUnit.size | number:2 }}</td>
                 <td class="right">{{ buildingUnit.price | number:2 }}</td>
-                <td class="right">{{ (buildingUnit.space * buildingUnit.price) | number:2 }}</td>
+                <td class="right">{{ (buildingUnit.size * buildingUnit.price) | number:2 }}</td>
               </tr>
             </tbody>
           </table>

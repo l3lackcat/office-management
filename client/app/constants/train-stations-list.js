@@ -14,7 +14,7 @@ angular.module('officeManagementApp')
                 { code: 'N08', name: 'Mo Chit' },
                 { code: 'E01', name: 'Chit Lom' },
                 { code: 'E02', name: 'Phloen Chit' },
-                { code: 'E03', name: 'N0ana' },
+                { code: 'E03', name: 'Nana' },
                 { code: 'E04', name: 'Asok' },
                 { code: 'E05', name: 'Phrom Phong' },
                 { code: 'E06', name: 'Thong Lo' },

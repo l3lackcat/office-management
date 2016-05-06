@@ -1,12 +1,12 @@
 'use strict';
 
 angular.module('officeManagementApp')
-  .controller('ImportBuildingCtrl', function ($http, $q, $scope, _, FileUploader) {
+  .controller('ImportBuildingCtrl', function ($http, $loading, $q, $scope, _, FileUploader) {
     var _importedBuildingList = null;
 
     $scope.uploader = new FileUploader();
 
-    $scope.importFile = importFile;
+    $scope.importBuilding = importBuilding;
     $scope.reset = reset;
 
     function onChangedFile (e) {
@@ -32,12 +32,12 @@ angular.module('officeManagementApp')
             building: '',
             name: buildingObj.unitName.toString(),
             floor: buildingObj.floor.toString(),
-            space: parseFloat(buildingObj.space),
+            size: parseFloat(buildingObj.size),
             price: parseFloat(buildingObj.price),
             type: buildingObj.type,
             available: (buildingObj.available === 'Y') ? true : false,
             remark: buildingObj.remarks,
-            contactInfo: buildingObj.contactInfo
+            contact: buildingObj.contact
         };
     };
 
@@ -89,8 +89,10 @@ angular.module('officeManagementApp')
         });
     };
 
-    function importFile () {
+    function importBuilding () {
         // updateStatus(STATUS_IMPORTING);
+
+        $loading.start('import-building');
 
         var newBuildingList = generateNewBuildingList();
 
@@ -182,14 +184,14 @@ angular.module('officeManagementApp')
 
                 if (buildingUnitPromise !== null) {
                     $q.all(buildingUnitPromise).then(function (results) {
-                        // updateStatus(STATUS_COMPLETED);
+                        $loading.finish('import-building');
                     });
                 } else {
-                    // updateStatus(STATUS_COMPLETED);
+                    $loading.finish('import-building');
                 }
             });
         } else {
-            // updateStatus(STATUS_COMPLETED);
+            $loading.finish('import-building');
         }
     };
 

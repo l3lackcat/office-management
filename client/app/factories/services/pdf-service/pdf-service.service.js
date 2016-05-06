@@ -3,8 +3,8 @@
 angular.module('officeManagementApp')
   .service('PdfService', function ($filter, _, pdfMake) {
     var PdfService = {
-        createBuildingDetailReport: function (buildingUnitList) {
-            var groupedBuildingUnitList = _.groupBy(buildingUnitList, 'building._id');
+        createBuildingDetailReport: function (selectedBuildingUnitList, action) {
+            var groupedBuildingUnitList = _.groupBy(selectedBuildingUnitList, 'building._id');
             var docDefinition = {
                 pageSize: 'A4',
                 pageOrientation: 'portrait',
@@ -73,15 +73,20 @@ angular.module('officeManagementApp')
 
                     docDefinition.content.push(createTextObject('\n'));
                     docDefinition.content.push(createBuildingUnitTableObject(buildingUnitList));
-                    docDefinition.content.push({ text: '', pageOrientation: 'portrait', pageBreak: 'after' });
+                    // docDefinition.content.push({ text: '', pageOrientation: 'portrait', pageBreak: 'after' });
                 }
             }
 
+            if (action === 'print') {
+                pdfMake.createPdf(docDefinition).print();
+            } else {
+                pdfMake.createPdf(docDefinition).open();
+            }
             // open the PDF in a new window
-            pdfMake.createPdf(docDefinition).open();
+            
 
             // print the PDF (temporarily Chrome-only)
-            // pdfMake.createPdf(docDefinition).print();
+            // 
 
             // download the PDF (temporarily Chrome-only)
             // pdfMake.createPdf(docDefinition).download('optionalName.pdf');
@@ -94,7 +99,7 @@ angular.module('officeManagementApp')
             heading1: { fontSize: 16, bold: true },
             heading2: { fontSize: 12, bold: true },
             content1: { fontSize: 10, bold: true },
-            content1: { fontSize: 10 }
+            content2: { fontSize: 10 }
         };
 
         if (textType != null) {
@@ -163,12 +168,12 @@ angular.module('officeManagementApp')
 
             buildingUnitDetail.push({ style: style.content, alignment: 'left', text: buildingUnit.name });
             buildingUnitDetail.push({ style: style.content, alignment: 'center', text: buildingUnit.floor });
-            buildingUnitDetail.push({ style: style.content, alignment: 'right', text: $filter('number')(buildingUnit.space, 2) });
+            buildingUnitDetail.push({ style: style.content, alignment: 'right', text: $filter('number')(buildingUnit.size, 2) });
             buildingUnitDetail.push({ style: style.content, alignment: 'right', text: $filter('number')(buildingUnit.price, 2) });
-            buildingUnitDetail.push({ style: style.content, alignment: 'right', text: $filter('number')(buildingUnit.space * buildingUnit.price, 2) });
+            buildingUnitDetail.push({ style: style.content, alignment: 'right', text: $filter('number')(buildingUnit.size * buildingUnit.price, 2) });
             buildingUnitDetail.push({ style: style.content, alignment: 'left', text: buildingUnit.remark });
 
-            tableObj.table.body.push(buildingUnitDetail)
+            tableObj.table.body.push(buildingUnitDetail);
         }
 
         return tableObj;

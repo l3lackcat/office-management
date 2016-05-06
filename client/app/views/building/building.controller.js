@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('officeManagementApp')
-    .controller('BuildingCtrl', function ($http, $q, $routeParams, $scope, $uibModal, _, AppConstant) {
+    .controller('BuildingCtrl', function ($http, $loading, $q, $routeParams, $scope, $timeout, $uibModal, _, AppConstant, PdfService) {
         $scope.building = null;
         $scope.buildingUnitList = [];
         $scope.isSelectAllBuildingUnit = false;
@@ -13,12 +13,26 @@ angular.module('officeManagementApp')
         $scope.editingBuilding = null;
         $scope.editingProperty = '';
 
+        $scope.trainStation = {
+            bts: angular.copy(AppConstant.TRAIN_STATION_LIST.BTS),
+            mrt: angular.copy(AppConstant.TRAIN_STATION_LIST.MRT)
+        };
+
         $scope.exportToPdf = exportToPdf;
         $scope.init = init;
         $scope.openBuildingUnit = openBuildingUnit;
+        $scope.print = print;
         $scope.setBuildingUnitAvaillable = setBuildingUnitAvaillable;
         $scope.toggleBuildingUnitSelection = toggleBuildingUnitSelection;
         $scope.updateBuildingUnitSelection = updateBuildingUnitSelection;
+
+        $scope.updateBuilding = updateBuilding;
+        $scope.startEditingBuilding = startEditingBuilding;
+        $scope.cancelEditingBuilding = cancelEditingBuilding;
+
+        // $scope.updateBuildingUnit = updateBuildingUnit;
+
+        $scope.init();
 
         function exportToPdf () {
             var selectedBuildingUnitList = _.filter($scope.buildingUnitList, { selected: true });
@@ -42,15 +56,71 @@ angular.module('officeManagementApp')
             });
         };
 
+        function init () {
+            var buildingId = $routeParams.buildingId;
+
+            $loading.start('building');
+
+            $q.all([
+                getBuilding(buildingId),
+                getBuildingUnitList(buildingId)
+            ]).then(function (results) {
+                $scope.building = results[0].data;
+                $scope.buildingUnitList = results[1].data;
+
+                $loading.finish('building');
+            });
+        };
+
         function openBuildingUnit (buildingUnitId) {
-            var buildingUnit = _.find($scope.buildingUnitList, { _id: buildingUnitId });
+            var modalInstance = null;
+            var options = _.find(AppConstant.MODAL_LIST, { name: 'BuildingUnitModal' });
 
-            if (buildingUnit != null) {
-                var options = _.find(AppConstant.MODAL_LIST, { name: 'BuildingUnitModal' });
+            if (options != null) {
+                var buildingUnit = _.find($scope.buildingUnitList, { _id: buildingUnitId });
 
-                if (options != null) {
-                    var modalInstance = $uibModal.open(options);
+                if (buildingUnit != null) {
+                    options.resolve = {
+                        buildingUnit: function () {
+                            return buildingUnit;
+                        }
+                    };
+                } else {
+                    options.resolve = {
+                        buildingUnit: function () {
+                            return {
+                                building: $scope.building._id,
+                                name: '',
+                                floor: '',
+                                size: undefined,
+                                price: undefined,
+                                type: 'Office',
+                                available: true,
+                                remark: '',
+                                contact: ''
+                            };
+                        }
+                    };
                 }
+
+                modalInstance = $uibModal.open(options);
+                modalInstance.result.then(function (editedBuildingUnit) {
+                    if (editedBuildingUnit.hasOwnProperty('_id') === true) {
+                        updateBuildingUnit(editedBuildingUnit);
+                    } else {
+                        insertBuildingUnit(editedBuildingUnit);
+                    }
+                });
+            }
+        };
+
+        function print () {
+            var selectedBuildingUnitList = _.filter($scope.buildingUnitList, { selected: true });
+            
+            if (selectedBuildingUnitList.length === 0) {
+                // TODO
+            } else {
+                PdfService.createBuildingDetailReport(selectedBuildingUnitList, 'print');
             }
         };
 
@@ -73,22 +143,58 @@ angular.module('officeManagementApp')
             }
         };
 
-        $scope.saveEditing = function () {
+        function updateBuilding () {
             var buildingId = $scope.building._id;
+
+            $loading.start('update-building');
 
             $http.put('/api/buildings/' + buildingId, $scope.editingBuilding).success(function (newBuilding) {
                 $scope.building = angular.copy(newBuilding);
                 $scope.editingBuilding = null;
                 $scope.editingProperty = '';
+
+                $loading.finish('update-building');
             });
         };
 
-        $scope.startEditing = function (propertyName) {
-            $scope.editingBuilding = angular.copy($scope.building);
-            $scope.editingProperty = propertyName;
+        function insertBuildingUnit (editedBuildingUnit) {
+            $loading.start('update-building-unit');
+
+            $http.post('/api/building-units', editedBuildingUnit).success(function (insertedBuildingUnit) {
+                $scope.buildingUnitList.push(insertedBuildingUnit);
+
+                $loading.finish('update-building-unit');
+            });
         };
 
-        $scope.stopEditing = function () {
+        function updateBuildingUnit (editedBuildingUnit) {
+            $loading.start('update-building-unit');
+
+            $http.put('/api/building-units/' + editedBuildingUnit._id, editedBuildingUnit).success(function (updatedBuildingUnit) {
+                var index = _.findIndex($scope.buildingUnitList, { _id: updatedBuildingUnit._id });
+
+                if (index > -1) {
+                    $scope.buildingUnitList[index] = angular.copy(updatedBuildingUnit);
+
+                    $loading.finish('update-building-unit');
+                }
+            });
+        };
+
+        function startEditingBuilding (propertyName, elementId) {
+            $scope.editingBuilding = angular.copy($scope.building);
+            $scope.editingProperty = propertyName;
+
+            $timeout(function () {
+                var element = angular.element('#' + elementId)[0];
+
+                if (element != null) {
+                    element.focus();
+                }
+            });
+        };
+
+        function cancelEditingBuilding () {
             $scope.editingBuilding = null;
             $scope.editingProperty = '';
         };
@@ -120,18 +226,4 @@ angular.module('officeManagementApp')
                 }
             }
         };
-
-        function init () {
-            var buildingId = $routeParams.buildingId;
-
-            $q.all([
-                getBuilding(buildingId),
-                getBuildingUnitList(buildingId)
-            ]).then(function (results) {
-                $scope.building = results[0].data;
-                $scope.buildingUnitList = results[1].data;
-            });
-        };
-
-        $scope.init();
     });

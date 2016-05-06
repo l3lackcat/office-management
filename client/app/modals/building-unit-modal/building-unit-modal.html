@@ -1,19 +1,74 @@
 <div id="building-unit-modal">
   <div class="modal-header">
-    <h3 class="modal-title">Unit</h3>
+    <h3 class="modal-title">Building Unit</h3>
   </div>
   <div class="modal-body">
     <form class="form-horizontal">
       <div class="form-group">
-        <label for="input-buildingUnit.name" class="col-sm-3 control-label">Name</label>
+        <label for="input-buildingUnit.name" class="col-sm-3 control-label">Name:</label>
         <div class="col-sm-9">
-          <input type="text" class="form-control" id="input-buildingUnit.name" placeholder="Name" ng-model="buildingUnit.name">
+          <input type="text" class="form-control" id="input-buildingUnit.name" placeholder="Name" ng-model="buildingUnit.name" autofocus>
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="input-buildingUnit.floor" class="col-sm-3 control-label">Floor:</label>
+        <div class="col-sm-9">
+          <input type="text" class="form-control" id="input-buildingUnit.floor" placeholder="Floor" ng-model="buildingUnit.floor">
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="input-buildingUnit.size" class="col-sm-3 control-label">Size:</label>
+        <div class="col-sm-9">
+          <div class="input-group">
+            <input type="text" class="form-control" placeholder="Size" ng-model="buildingUnit.size">
+            <span class="input-group-addon">sqm.</span>
+          </div>
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="input-buildingUnit.price" class="col-sm-3 control-label">Price:</label>
+        <div class="col-sm-9">
+          <div class="input-group">
+            <span class="input-group-addon">฿</span>
+            <input type="text" class="form-control" placeholder="Price" ng-model="buildingUnit.price">
+            <span class="input-group-addon">per sqm.</span>
+          </div>
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="input-buildingUnit.type" class="col-sm-3 control-label">Type:</label>
+        <div class="col-sm-9">
+          <div class="btn-group" id="input-buildingUnit.type">
+            <label class="btn btn-primary" ng-model="buildingUnit.type" uib-btn-radio="'Office'">Office</label>
+            <label class="btn btn-primary" ng-model="buildingUnit.type" uib-btn-radio="'Retail'">Retail</label>
+          </div>
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="input-buildingUnit.available" class="col-sm-3 control-label">Available:</label>
+        <div class="col-sm-9">
+          <div class="btn-group" id="input-buildingUnit.available">
+            <label class="btn btn-primary" ng-model="buildingUnit.available" uib-btn-radio="true">Yes</label>
+            <label class="btn btn-primary" ng-model="buildingUnit.available" uib-btn-radio="false">No</label>
+          </div>
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="input-buildingUnit.contact" class="col-sm-3 control-label">Contact:</label>
+        <div class="col-sm-9">
+          <input type="text" class="form-control" id="input-buildingUnit.contact" placeholder="Contact" ng-model="buildingUnit.contact">
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="input-buildingUnit.remark" class="col-sm-3 control-label">Remark:</label>
+        <div class="col-sm-9">
+          <textarea class="form-control" id="input-buildingUnit.remark" rows="4" ng-model="buildingUnit.remark"></textarea>
         </div>
       </div>
     </form>
   </div>
   <div class="modal-footer">
     <button class="btn btn-primary" type="button" ng-click="ok()">OK</button>
-    <button class="btn btn-warning" type="button" ng-click="cancel()">Cancel</button>
+    <button class="btn btn-default" type="button" ng-click="cancel()">Cancel</button>
   </div>
 </div>

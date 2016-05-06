@@ -12,6 +12,7 @@
     "angular-route": "~1.4.0",
     "angular-bootstrap": "~0.14.3",
     "angular-file-upload": "~2.2.0",
+    "angular-loading": "~0.1.4",
     "angular-ui-select": "~0.16.1",
     "font-awesome": ">=4.1.0",
     "lodash": "~4.11.1",

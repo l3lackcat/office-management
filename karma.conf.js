@@ -20,6 +20,8 @@ module.exports = function(config) {
       'client/bower_components/angular-route/angular-route.js',
       'client/bower_components/angular-bootstrap/ui-bootstrap-tpls.js',
       'client/bower_components/angular-file-upload/dist/angular-file-upload.min.js',
+      'client/bower_components/spin.js/spin.js',
+      'client/bower_components/angular-loading/angular-loading.js',
       'client/bower_components/angular-ui-select/dist/select.js',
       'client/bower_components/lodash/lodash.js',
       'client/bower_components/angular-validation-match/dist/angular-validation-match.min.js',
