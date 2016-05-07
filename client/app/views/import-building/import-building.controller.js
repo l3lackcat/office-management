@@ -7,6 +7,7 @@ angular.module('officeManagementApp')
     $scope.uploader = new FileUploader();
     $scope.excelSheet = { list: [], selected: null };
 
+    $scope.checkDisabled = checkDisabled;
     $scope.importBuilding = importBuilding;
     $scope.onChangedSelectedSheet = onChangedSelectedSheet;
     $scope.previewBuilding = previewBuilding;
@@ -113,6 +114,24 @@ angular.module('officeManagementApp')
         } else {
             reset();
         }
+    };
+
+    function checkDisabled (name) {
+        var isDisabled = true;
+
+        if ((name === 'preview-building') || (name === 'import-building')) {
+            if ($scope.uploader.getNotUploadedItems().length > 0) {
+                if ($scope.excelSheet.list.length > 0) {
+                    if ($scope.excelSheet.selected !== null) {
+                        isDisabled = false;
+                    }
+                } else {
+                    isDisabled = false;
+                }
+            }
+        }
+
+        return isDisabled;
     };
 
     function onChangedSelectedFile (e) {
