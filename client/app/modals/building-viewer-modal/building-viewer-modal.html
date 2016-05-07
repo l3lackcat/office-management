@@ -18,7 +18,7 @@
           <th>Contact</th>
         </tr>
       </thead>
-      <tbody>
+      <tbody ng-show="buildingUnitList.length > 0">
         <tr ng-repeat="buildingUnit in buildingUnitList | orderBy: 'building.name'">
           <td>
             <i class="fa fa-circle building-unit-status" aria-hidden="true" ng-class="{ available: buildingUnit.available }"></i>
@@ -32,6 +32,11 @@
           <td>{{ buildingUnit.building.area }}</td>
           <td>{{ buildingUnit.remark }}</td>
           <td>{{ buildingUnit.contact }}</td>
+        </tr>
+      </tbody>
+      <tbody ng-hide="buildingUnitList.length > 0">
+        <tr>
+          <td class="center" colspan="10">No buildings to be displayed.</td>
         </tr>
       </tbody>
     </table>
