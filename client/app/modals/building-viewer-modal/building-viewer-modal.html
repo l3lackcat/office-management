@@ -8,12 +8,12 @@
         <tr>
           <th>&nbsp;</th>
           <th>Building Name</th>
+          <th>Location</th>
           <th>Unit</th>
           <th>Fl.</th>
-          <th class="right">Size</th>
-          <th class="right">Price</th>
           <th>Type</th>
-          <th>Area</th>
+          <th class="right">Area</th>
+          <th class="right">Price</th>
           <th>Remarks</th>
           <th>Contact</th>
         </tr>
@@ -24,12 +24,12 @@
             <i class="fa fa-circle building-unit-status" aria-hidden="true" ng-class="{ available: buildingUnit.available }"></i>
           </td>
           <td>{{ buildingUnit.building.name }}</td>
+          <td>{{ buildingUnit.building.location }}</td>
           <td>{{ buildingUnit.name }}</td>
           <td>{{ buildingUnit.floor }}</td>
-          <td class="right">{{ buildingUnit.size }}</td>
-          <td class="right">{{ buildingUnit.price }}</td>
           <td>{{ buildingUnit.type }}</td>
-          <td>{{ buildingUnit.building.area }}</td>
+          <td class="right">{{ buildingUnit.area }}</td>
+          <td class="right">{{ buildingUnit.price }}</td>
           <td>{{ buildingUnit.remark }}</td>
           <td>{{ buildingUnit.contact }}</td>
         </tr>

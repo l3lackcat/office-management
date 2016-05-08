@@ -25,11 +25,11 @@ angular.module('officeManagementApp')
                     $scope.buildingUnitList.push({
                         building: {
                             name: building.name,
-                            area: building.area
+                            location: building.location
                         },
                         name: buildingUnit.name,
                         floor: buildingUnit.floor,
-                        size: buildingUnit.size,
+                        area: buildingUnit.area,
                         price: buildingUnit.price,
                         type: buildingUnit.type,
                         available: buildingUnit.available,

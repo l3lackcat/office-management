@@ -6,7 +6,7 @@ var BuildingUnitSchema = new mongoose.Schema({
   building: { type: mongoose.Schema.Types.ObjectId, ref: 'Building' },
   name: { type: String, default: '' },
   floor: { type: String, default: '' },
-  size: { type: Number, default: 0 },
+  area: { type: Number, default: 0 },
   price: { type: Number, default: 0 },
   type: { type: String, default: 'Office' },
   available: { type: Boolean, default: true },
