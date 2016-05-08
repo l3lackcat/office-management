@@ -75,6 +75,25 @@ angular.module('officeManagementApp')
         });
     };
 
+    function updateOldBuildingList (buildingList) {
+        if (buildingList.length === 0) { return null; }
+
+        var insertBuildingPromise = {};
+
+        for(var i = buildingList.length - 1; i >= 0; i--) {
+            var buildingObj = buildingList[i];
+            var buildingName = buildingObj.name;
+
+            insertBuildingPromise[buildingName] = $http.put('/api/buildings/' + buildingObj.id, {
+                location: buildingObj.location
+            });
+        }
+
+        return $q.all(insertBuildingPromise).then(function (results) {
+            return results;
+        });
+    };
+
     function importBuilding () {
         $loading.start('import-building');
 
@@ -97,7 +116,8 @@ angular.module('officeManagementApp')
                 }
 
                 $q.all([
-                    insertNewBuildingList(newBuildingList)
+                    insertNewBuildingList(newBuildingList),
+                    updateOldBuildingList(oldBuildingList)
                 ]).then(function (results) {
                     var insertResult = results[0];
 
