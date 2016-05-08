@@ -18,7 +18,7 @@ angular.module('officeManagementApp')
             building: '',
             name: (buildingObj.unitName || '').toString(),
             floor: (buildingObj.floor || '').toString(),
-            size: parseFloat(buildingObj.size || 0),
+            area: parseFloat(buildingObj.area || 0),
             price: parseFloat(buildingObj.price || 0),
             type: buildingObj.type || 'Office',
             available: (buildingObj.available === 'Y') ? true : false,
@@ -43,7 +43,7 @@ angular.module('officeManagementApp')
                     newBuildingList.push({
                         id: '',
                         name: buildingName.toString(),
-                        area: importedBuilding.area || '',
+                        location: importedBuilding.location || '',
                         units: [buildingUnitObj]
                     });
                 } else {
@@ -66,7 +66,7 @@ angular.module('officeManagementApp')
 
             insertBuildingPromise[buildingName] = $http.post('/api/buildings', {
                 name: buildingName,
-                area: buildingObj.area
+                location: buildingObj.location
             });
         }
 
@@ -268,8 +268,6 @@ angular.module('officeManagementApp')
                 data: sheets[sheetName]
             })
         }
-
-        console.log($scope.excelSheet.list);
     };
 
     function reset () {

@@ -10,12 +10,6 @@ angular.module('officeManagementApp')
                 pageOrientation: 'portrait',
                 pageMargins: [40, 60, 40, 60],
                 content:[]
-                // content: [
-                //     {text: 'Text on Portrait'},
-                //     {text: 'Text on Landscape', pageOrientation: 'landscape', pageBreak: 'before'},
-                //     {text: 'Text on Landscape 2', pageOrientation: 'portrait', pageBreak: 'after'},
-                //     {text: 'Text on Portrait 2'},
-                // ]
             };
 
             for(var buildingId in groupedBuildingUnitList) {
@@ -66,7 +60,7 @@ angular.module('officeManagementApp')
                     columnObj.columns.push({ width: 200, text: '' });
 
                     docDefinition.content.push(createTextObject(buildingObj.name, 'heading1'));
-                    docDefinition.content.push(createTextObject(buildingObj.area, 'heading2'));
+                    docDefinition.content.push(createTextObject(buildingObj.location, 'heading2'));
                     docDefinition.content.push(createTextObject('\n'));
 
                     docDefinition.content.push(columnObj);
@@ -168,9 +162,9 @@ angular.module('officeManagementApp')
 
             buildingUnitDetail.push({ style: style.content, alignment: 'left', text: buildingUnit.name });
             buildingUnitDetail.push({ style: style.content, alignment: 'center', text: buildingUnit.floor });
-            buildingUnitDetail.push({ style: style.content, alignment: 'right', text: $filter('number')(buildingUnit.size, 2) });
+            buildingUnitDetail.push({ style: style.content, alignment: 'right', text: $filter('number')(buildingUnit.area, 2) });
             buildingUnitDetail.push({ style: style.content, alignment: 'right', text: $filter('number')(buildingUnit.price, 2) });
-            buildingUnitDetail.push({ style: style.content, alignment: 'right', text: $filter('number')(buildingUnit.size * buildingUnit.price, 2) });
+            buildingUnitDetail.push({ style: style.content, alignment: 'right', text: $filter('number')(buildingUnit.area * buildingUnit.price, 2) });
             buildingUnitDetail.push({ style: style.content, alignment: 'left', text: buildingUnit.remark });
 
             tableObj.table.body.push(buildingUnitDetail);

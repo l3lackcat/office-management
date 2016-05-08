@@ -1,20 +1,31 @@
 'use strict';
 
 angular.module('officeManagementApp')
-    .controller('MainController', function ($filter, $http, $loading, $q, $scope, _, PdfService) {
+    .controller('MainController', function ($filter, $http, $loading, $q, $scope, _, AppConstant, PdfService) {
         $scope.buildingUnitList = [];
         $scope.buildingUnitFilter = {
-            area: {
-                list: [],
-                selected: []
-            },
             buildingName: '',
-            priceRange: {
+            areaRange: {
+                list: AppConstant.AREA_RANGE_LIST,
+                selected: []
+            },
+            location: {
                 list: [],
                 selected: []
             },
-            sizeRange: {
-                list: [],
+            netPriceRange: {
+                list: AppConstant.NET_PRICE_RANGE_LIST,
+                selected: []
+            },
+            priceRange: {
+                list: AppConstant.PRICE_RANGE_LIST,
+                selected: []
+            },
+            type: {
+                list: [
+                    { id: 0, name: 'Office' },
+                    { id: 1, name: 'Retail' }
+                ],
                 selected: []
             }
         };
@@ -35,7 +46,7 @@ angular.module('officeManagementApp')
         $scope.init();
 
         function applyFilter (item) {
-            return validateAreaFilter(item) && validateBuildingNameFilter(item) && validatePriceFilter(item) && validateSizeFilter(item);
+            return validateBuildingNameFilter(item) && validateLocationFilter(item) && validateAreaFilter(item) && validateNetPriceFilter(item) && validatePriceFilter(item) && validateTypeFilter(item);
         };
 
         function exportToPdf () {
@@ -71,9 +82,7 @@ angular.module('officeManagementApp')
                 var buildingUnitList = results[1].data;
 
                 $scope.buildingUnitList = buildingUnitList;
-                $scope.buildingUnitFilter.area.list = generateArrBuildingArea(buildingList);
-                $scope.buildingUnitFilter.priceRange.list = generateArrRangeFilter(buildingUnitList, 'price', 500);
-                $scope.buildingUnitFilter.sizeRange.list = generateArrRangeFilter(buildingUnitList, 'size', 200);
+                $scope.buildingUnitFilter.location.list = generateArrBuildingLocation(buildingList);
 
                 $loading.finish('main');
             });
@@ -89,18 +98,32 @@ angular.module('officeManagementApp')
             }
         };
 
-        function generateArrBuildingArea (buildingList) {
-            var buildingAreaList = [];
-            var arrAreaName = _.uniq(_.without(_.map(buildingList, 'area'), null));
+        function generateArrBuildingLocation (buildingList) {
+            var buildingLocationList = [];
+            var possibleLocationList = _.uniq(_.without(_.map(buildingList, 'location'), null));
 
-            for(var i = arrAreaName.length - 1; i >= 0; i--) {
-                buildingAreaList.push({
+            for(var i = possibleLocationList.length - 1; i >= 0; i--) {
+                buildingLocationList.push({
                     id: i,
-                    name: arrAreaName[i]
-                })
+                    name: possibleLocationList[i]
+                });
             }
 
-            return _.sortBy(buildingAreaList, 'name');
+            return _.sortBy(buildingLocationList, 'name');
+        };
+
+        function generateArrBuildingUnitType (buildingUnitList) {
+            var buildingUnitTypeList = [];
+            var possibleUnitTypeList = _.uniq(_.without(_.map(buildingUnitList, 'type'), null));
+
+            for(var i = possibleUnitTypeList.length - 1; i >= 0; i--) {
+                buildingUnitTypeList.push({
+                    id: i,
+                    name: possibleUnitTypeList[i]
+                });
+            }
+
+            return _.sortBy(buildingUnitTypeList, 'name');
         };
 
         function generateArrBuildingUnit (buildingUnitList) {
@@ -109,35 +132,6 @@ angular.module('officeManagementApp')
             }
 
             return buildingUnitList;
-        };
-
-        function generateArrRangeFilter (buildingUnitList, propertyName, range) {
-            if (buildingUnitList.length === 0) { return []; }
-
-            var rangeFilterList = [];
-            var maxValue = _.max(_.without(_.map(buildingUnitList, propertyName), null));
-            var numRange = Math.ceil(maxValue / range);
-
-            for(var i = 0; i < numRange; i++) {
-                var min = range * i;
-                var max = range + min;
-
-                rangeFilterList.push({
-                    id: i,
-                    name: $filter('number')(min, 0) + ' to ' + $filter('number')(max, 0),
-                    min: min,
-                    max: max
-                });
-            }
-
-            // rangeFilterList.push({
-            //     id: 'custom',
-            //     name: 'Custom...',
-            //     min: null,
-            //     max: null
-            // });
-
-            return rangeFilterList;
         };
 
         function setBuildingUnitAvaillable (isAvailable) {
@@ -154,7 +148,7 @@ angular.module('officeManagementApp')
 
             if (buildingUnitPromise.length > 0) {
                 $q.all(buildingUnitPromise).then(function (results) {
-                    // TODO
+                    // Do Nothing
                 });
             }
         };
@@ -188,15 +182,15 @@ angular.module('officeManagementApp')
         };
 
         function validateAreaFilter (item) {
-            var selectedAreaList = $scope.buildingUnitFilter.area.selected;
+            var selectedAreaRangeList = $scope.buildingUnitFilter.areaRange.selected;
 
-            if (selectedAreaList.length === 0) {
+            if (selectedAreaRangeList.length === 0) {
                 return true;
             } else {
-                var area = item.building.area;
+                for(var i = selectedAreaRangeList.length - 1; i >= 0; i--) {
+                    var isValid = validateRange(item.area, selectedAreaRangeList[i].min, selectedAreaRangeList[i].max);
 
-                for(var i = selectedAreaList.length - 1; i >= 0; i--) {
-                    if (selectedAreaList[i].name === area) {
+                    if (isValid === true) {
                         return true;
                     }
                 }
@@ -214,16 +208,14 @@ angular.module('officeManagementApp')
             return false;
         };
 
-        function validatePriceFilter (item) {
-            var selectedPriceRangeList = $scope.buildingUnitFilter.priceRange.selected;
+        function validateLocationFilter (item) {
+            var selectedLocationList = $scope.buildingUnitFilter.location.selected;
 
-            if (selectedPriceRangeList.length === 0) {
+            if (selectedLocationList.length === 0) {
                 return true;
             } else {
-                var price = item.price;
-
-                for(var i = selectedPriceRangeList.length - 1; i >= 0; i--) {
-                    if ((price >= selectedPriceRangeList[i].min) && (price <= selectedPriceRangeList[i].max)) {
+                for(var i = selectedLocationList.length - 1; i >= 0; i--) {
+                    if (selectedLocationList[i].name === item.building.location) {
                         return true;
                     }
                 }
@@ -232,18 +224,70 @@ angular.module('officeManagementApp')
             return false;
         };
 
-        function validateSizeFilter (item) {
-            var selectedSizeRangeList = $scope.buildingUnitFilter.sizeRange.selected;
+        function validateNetPriceFilter (item) {
+            var selectedNetPriceRangeList = $scope.buildingUnitFilter.netPriceRange.selected;
 
-            if (selectedSizeRangeList.length === 0) {
+            if (selectedNetPriceRangeList.length === 0) {
                 return true;
             } else {
-                var size = item.size;
+                for(var i = selectedNetPriceRangeList.length - 1; i >= 0; i--) {
+                    var isValid = validateRange(item.area * item.price, selectedNetPriceRangeList[i].min, selectedNetPriceRangeList[i].max);
 
-                for(var i = selectedSizeRangeList.length - 1; i >= 0; i--) {
-                    if ((size >= selectedSizeRangeList[i].min) && (size <= selectedSizeRangeList[i].max)) {
+                    if (isValid === true) {
                         return true;
                     }
+                }
+            }
+
+            return false;
+        };
+
+        function validatePriceFilter (item) {
+            var selectedPriceRangeList = $scope.buildingUnitFilter.priceRange.selected;
+
+            if (selectedPriceRangeList.length === 0) {
+                return true;
+            } else {
+                for(var i = selectedPriceRangeList.length - 1; i >= 0; i--) {
+                    var isValid = validateRange(item.price, selectedPriceRangeList[i].min, selectedPriceRangeList[i].max);
+
+                    if (isValid === true) {
+                        return true;
+                    }
+                }
+            }
+
+            return false;
+        };
+
+        function validateTypeFilter (item) {
+            var selectedTypeList = $scope.buildingUnitFilter.type.selected;
+
+            if (selectedTypeList.length === 0) {
+                return true;
+            } else {
+                for(var i = selectedTypeList.length - 1; i >= 0; i--) {
+                    if (selectedTypeList[i].name === item.type) {
+                        return true;
+                    }
+                }
+            }
+
+            return false;
+        };
+
+        function validateRange (input, min, max) {
+            if ((min !== null) && (max !== null)) {
+                if ((input >= min) && (input <= max)) {
+                    return true;
+                }
+            } else if ((min !== null) && (max === null)) {
+                if (input >= min) {
+                    return true;
+                }
+            } else if ((min === null) && (max !== null)) {
+                if (input <= max) {
+                    return true;
                 }
             }
 
