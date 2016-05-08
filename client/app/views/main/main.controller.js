@@ -42,6 +42,7 @@ angular.module('officeManagementApp')
         $scope.setBuildingUnitAvaillable = setBuildingUnitAvaillable;
         $scope.toggleBuildingUnitSelection = toggleBuildingUnitSelection;
         $scope.updateBuildingUnitSelection = updateBuildingUnitSelection;
+        $scope.removeAll = removeAll;
 
         $scope.init();
 
@@ -292,5 +293,29 @@ angular.module('officeManagementApp')
             }
 
             return false;
+        };
+
+        function removeAll () {
+            var deletePromise = {};
+
+            $loading.start('main');
+
+            for(var i = $scope.buildingUnitList.length - 1; i >= 0; i--) {
+                var buildingId = $scope.buildingUnitList[i].building._id;
+                var buildingUnitId = $scope.buildingUnitList[i]._id;
+
+                if (deletePromise.hasOwnProperty(buildingId) === false) {
+                    deletePromise[buildingId] = $http.delete('/api/buildings/' + buildingId);
+                }
+
+                if (deletePromise.hasOwnProperty(buildingUnitId) === false) {
+                    deletePromise[buildingUnitId] = $http.delete('/api/building-units/' + buildingUnitId);
+                }
+            }
+
+            $q.all(deletePromise).then(function () {
+                $scope.buildingUnitList = [];
+                $loading.finish('main');
+            });
         };
 });
