@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('officeManagementApp')
-    .controller('MainController', function ($filter, $http, $loading, $q, $scope, _, Metadata, AppUtil, BuildingService, ExportUtil) {
+    .controller('MainController', function ($filter, $loading, $q, $scope, _, AppUtil, BuildingService, ExportUtil, Metadata) {
         $scope.buildingUnitList = [];
         $scope.buildingFilter = angular.copy(Metadata.BUILDING_FILTER);
         $scope.isSelectAllBuildingUnit = false;
@@ -78,6 +78,7 @@ angular.module('officeManagementApp')
                     }
                 }
 
+                updateBuildingUnitSelection();
                 // remove building with no units??
 
                 $loading.finish('main');
@@ -93,7 +94,7 @@ angular.module('officeManagementApp')
                 selectedBuildingUnitList[i].available = isAvailable;
             }
 
-            $q.all(BuildingService.updateBuildingUnit(selectedBuildingUnitList)).then(function (results) {
+            $q.all(BuildingService.updateBuildingUnitList(selectedBuildingUnitList)).then(function (results) {
                 for(var buildingUnitId in results) {
                     var result = results[buildingUnitId];
 
