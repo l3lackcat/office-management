@@ -3,8 +3,7 @@
 angular.module('officeManagementApp')
   .service('PdfService', function ($filter, _, pdfMake) {
     var PdfService = {
-        createBuildingDetailReport: function (selectedBuildingUnitList, action) {
-            var groupedBuildingUnitList = _.groupBy(selectedBuildingUnitList, 'building._id');
+        createBuildingDetailReport: function (buildingUnitList, action) {
             var docDefinition = {
                 pageSize: 'A4',
                 pageOrientation: 'portrait',
@@ -12,63 +11,60 @@ angular.module('officeManagementApp')
                 content:[]
             };
 
-            for(var buildingId in groupedBuildingUnitList) {
-                var buildingUnitList = groupedBuildingUnitList[buildingId];
-                var buildingUnitCount = buildingUnitList.length;
+            if (buildingUnitList.length > 0) {
+                var buildingObj = buildingUnitList[0].building;
+                var columnObj = { alignment: 'justify', columns: [] };
+                var columnDetailObj = [];
 
-                if (buildingUnitCount > 0) {
-                    var buildingObj = buildingUnitList[0].building;
-                    var columnObj = { alignment: 'justify', columns: [] };
-                    var columnDetailObj = [];
+                console.log(buildingObj);
 
-                    columnDetailObj.push(createGroupingTextObject('BUILDING SPECS', [
-                        createPairTextObject('BUILT: ', ''),
-                        createPairTextObject('STOREYS: ', ''),
-                        createPairTextObject('CEILING HEIGHT: ', '')
-                    ]));
+                columnDetailObj.push(createGroupingTextObject('BUILDING SPECS', [
+                    createPairTextObject('BUILT: ', ''),
+                    createPairTextObject('STOREYS: ', ''),
+                    createPairTextObject('CEILING HEIGHT: ', '')
+                ]));
 
-                    columnDetailObj.push(createTextObject('\n'));
-                    columnDetailObj.push(createGroupingTextObject('LIFTS', [
-                        createPairTextObject('PASSENGER: ', '')
-                    ]));
+                columnDetailObj.push(createTextObject('\n'));
+                columnDetailObj.push(createGroupingTextObject('LIFTS', [
+                    createPairTextObject('PASSENGER: ', '')
+                ]));
 
-                    columnDetailObj.push(createTextObject('\n'));
-                    columnDetailObj.push(createGroupingTextObject('LEASE', [
-                        createPairTextObject('LEASE TERM: ', ''),
-                        createPairTextObject('DEPOSIT: ', ''),
-                        createPairTextObject('ADVANCE RENTAL: ', '')
-                    ]));
+                columnDetailObj.push(createTextObject('\n'));
+                columnDetailObj.push(createGroupingTextObject('LEASE', [
+                    createPairTextObject('LEASE TERM: ', ''),
+                    createPairTextObject('DEPOSIT: ', ''),
+                    createPairTextObject('ADVANCE RENTAL: ', '')
+                ]));
 
-                    columnDetailObj.push(createTextObject('\n'));
-                    columnDetailObj.push(createGroupingTextObject('PARKING', [
-                        createPairTextObject('TOTAL SPACES: ', ''),
-                        createPairTextObject('TENANT: ', ''),
-                        createPairTextObject('ADDITIONAL PARKING: ', ''),
-                        createPairTextObject('VISITOR PARKING: ', '')
-                    ]));
+                columnDetailObj.push(createTextObject('\n'));
+                columnDetailObj.push(createGroupingTextObject('PARKING', [
+                    createPairTextObject('TOTAL SPACES: ', ''),
+                    createPairTextObject('TENANT: ', ''),
+                    createPairTextObject('ADDITIONAL PARKING: ', ''),
+                    createPairTextObject('VISITOR PARKING: ', '')
+                ]));
 
-                    columnDetailObj.push(createTextObject('\n'));
-                    columnDetailObj.push(createGroupingTextObject('PARKING', [
-                        createPairTextObject('A/C TYPE: ', ''),
-                        createPairTextObject('A/C CHARGES: ', ''),
-                        createPairTextObject('TELEPHONE: ', ''),
-                        createPairTextObject('ELECTRICITY: ', ''),
-                        createPairTextObject('WATER CHARGE: ', '')
-                    ]));
+                columnDetailObj.push(createTextObject('\n'));
+                columnDetailObj.push(createGroupingTextObject('PARKING', [
+                    createPairTextObject('A/C TYPE: ', ''),
+                    createPairTextObject('A/C CHARGES: ', ''),
+                    createPairTextObject('TELEPHONE: ', ''),
+                    createPairTextObject('ELECTRICITY: ', ''),
+                    createPairTextObject('WATER CHARGE: ', '')
+                ]));
 
-                    columnObj.columns.push(columnDetailObj);
-                    columnObj.columns.push({ width: 200, text: '' });
+                columnObj.columns.push(columnDetailObj);
+                columnObj.columns.push({ width: 200, text: '' });
 
-                    docDefinition.content.push(createTextObject(buildingObj.name, 'heading1'));
-                    docDefinition.content.push(createTextObject(buildingObj.location, 'heading2'));
-                    docDefinition.content.push(createTextObject('\n'));
+                docDefinition.content.push(createTextObject(buildingObj.name, 'heading1'));
+                docDefinition.content.push(createTextObject(buildingObj.location, 'heading2'));
+                docDefinition.content.push(createTextObject('\n'));
 
-                    docDefinition.content.push(columnObj);
+                docDefinition.content.push(columnObj);
 
-                    docDefinition.content.push(createTextObject('\n'));
-                    docDefinition.content.push(createBuildingUnitTableObject(buildingUnitList));
-                    // docDefinition.content.push({ text: '', pageOrientation: 'portrait', pageBreak: 'after' });
-                }
+                docDefinition.content.push(createTextObject('\n'));
+                docDefinition.content.push(createBuildingUnitTableObject(buildingUnitList));
+                // docDefinition.content.push({ text: '', pageOrientation: 'portrait', pageBreak: 'after' });
             }
 
             if (action === 'print') {
@@ -76,14 +72,6 @@ angular.module('officeManagementApp')
             } else {
                 pdfMake.createPdf(docDefinition).open();
             }
-            // open the PDF in a new window
-            
-
-            // print the PDF (temporarily Chrome-only)
-            // 
-
-            // download the PDF (temporarily Chrome-only)
-            // pdfMake.createPdf(docDefinition).download('optionalName.pdf');
         }
     };
 

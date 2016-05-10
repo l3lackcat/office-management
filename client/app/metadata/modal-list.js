@@ -1,8 +1,8 @@
 'use strict';
 
 angular.module('officeManagementApp')
-    .run(function (AppConstant) {
-        AppConstant['MODAL_LIST'] = [
+    .run(function (Metadata) {
+        Metadata['MODAL_LIST'] = [
             {
                 name: 'BuildingUnitModal',
                 templateUrl: 'app/modals/building-unit-modal/building-unit-modal.html',

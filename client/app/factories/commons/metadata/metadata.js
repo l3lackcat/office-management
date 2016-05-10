@@ -1,4 +1,4 @@
 'use strict';
 
 angular.module('officeManagementApp')
-    .constant('AppConstant', {});
+    .constant('Metadata', {});

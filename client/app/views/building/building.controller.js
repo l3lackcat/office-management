@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('officeManagementApp')
-    .controller('BuildingCtrl', function ($http, $loading, $q, $routeParams, $scope, $timeout, $uibModal, _, AppConstant, PdfService) {
+    .controller('BuildingCtrl', function ($http, $loading, $q, $routeParams, $scope, $timeout, $uibModal, _, Metadata, PdfService) {
         $scope.building = null;
         $scope.buildingUnitList = [];
         $scope.isSelectAllBuildingUnit = false;
@@ -14,8 +14,8 @@ angular.module('officeManagementApp')
         $scope.editingProperty = '';
 
         $scope.trainStation = {
-            bts: angular.copy(AppConstant.TRAIN_STATION_LIST.BTS),
-            mrt: angular.copy(AppConstant.TRAIN_STATION_LIST.MRT)
+            bts: angular.copy(Metadata.TRAIN_STATION_LIST.BTS),
+            mrt: angular.copy(Metadata.TRAIN_STATION_LIST.MRT)
         };
 
         $scope.exportToPdf = exportToPdf;
@@ -74,7 +74,7 @@ angular.module('officeManagementApp')
 
         function openBuildingUnit (buildingUnitId) {
             var modalInstance = null;
-            var options = _.find(AppConstant.MODAL_LIST, { name: 'BuildingUnitModal' });
+            var options = _.find(Metadata.MODAL_LIST, { name: 'BuildingUnitModal' });
 
             if (options != null) {
                 var buildingUnit = _.find($scope.buildingUnitList, { _id: buildingUnitId });
