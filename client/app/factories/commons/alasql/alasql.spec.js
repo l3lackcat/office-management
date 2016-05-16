@@ -1,18 +1,18 @@
 'use strict';
 
-describe('Service: PdfService', function () {
+describe('Service: alasql', function () {
 
   // load the service's module
   beforeEach(module('officeManagementApp'));
 
   // instantiate service
-  var PdfService;
-  beforeEach(inject(function (_PdfService_) {
-    PdfService = _PdfService_;
+  var alasql;
+  beforeEach(inject(function (_alasql_) {
+    alasql = _alasql_;
   }));
 
   it('should do something', function () {
-    expect(!!PdfService).toBe(true);
+    expect(!!alasql).toBe(true);
   });
 
 });

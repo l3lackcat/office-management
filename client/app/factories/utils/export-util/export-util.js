@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('officeManagementApp')
-  .service('ExportUtil', function ($filter, _, pdfMake) {
+  .service('ExportUtil', function ($filter, _, alasql, pdfMake) {
     var ExportUtil = {
         print: function (buildingUnitList) {
             var groupedBuildingUnitList = _.groupBy(buildingUnitList, 'building._id');
@@ -9,6 +9,26 @@ angular.module('officeManagementApp')
             for(var buildingId in groupedBuildingUnitList) {
                 pdfMake.createPdf(createDocument(groupedBuildingUnitList[buildingId])).print();
             }
+        },
+
+        toExcel: function (buildingUnitList) {
+            var data = createExcelDataForExport(buildingUnitList);
+
+            alasql.promise('SELECT INTO XLSX("Buildings.xlsx", ?) FROM ?', data).then(function (data) {
+                console.log('Export to excel completed.');
+            }).catch(function(err){
+                console.log('Export error:', err);
+            });
+        },
+
+        toJson: function (buildingUnitList) {
+            var data = JSON.stringify(createJsonDataForExport(buildingUnitList));
+
+            alasql.promise('SELECT INTO TXT("Buildings.json") FROM ?', [data]).then(function (data) {
+                console.log('Export to text completed.');
+            }).catch(function(err){
+                console.log('Export error:', err);
+            });
         },
 
         toPdf: function (buildingUnitList) {
@@ -172,6 +192,92 @@ angular.module('officeManagementApp')
         }
 
         return tableObj;
+    };
+
+    function createExcelDataForExport (buildingUnitList) {
+        var sheetList = [];
+        var dataList = [];
+        var groupedBuildingUnitList = _.groupBy(buildingUnitList, 'building._id');
+
+        for(var buildingId in groupedBuildingUnitList) {
+            var buildingName = '';
+            var newBuildingUnitList = [];
+            var oldBuildingUnitList = groupedBuildingUnitList[buildingId];
+
+            for(var i = oldBuildingUnitList.length - 1; i >= 0; i--) {
+                var buildingUnit = oldBuildingUnitList[i];
+
+                if (buildingName === '') {
+                    buildingName = buildingUnit.building.name;
+                }
+
+                newBuildingUnitList.push({
+                    'available': (buildingUnit.available === true) ? 'Y' : 'N',
+                    'buildingName': buildingName,
+                    'unitName': buildingUnit.name,
+                    'floor': buildingUnit.floor,
+                    'area': $filter('number')(buildingUnit.area, 2),
+                    'price': $filter('number')(buildingUnit.price, 2),
+                    'type': buildingUnit.type,
+                    'location': buildingUnit.building.location,
+                    'remarks': buildingUnit.remark,
+                    'contact': buildingUnit.contact
+                });
+            }
+
+            sheetList.push({
+                sheetid: buildingName,
+                header: true
+            });
+
+            dataList.push(newBuildingUnitList);
+        }
+
+        return [sheetList, dataList];
+    };
+
+    function createJsonDataForExport (buildingUnitList) {
+        var data = [];
+        var groupedBuildingUnitList = _.groupBy(buildingUnitList, 'building._id');
+
+        for(var buildingId in groupedBuildingUnitList) {
+            var buildingObj = null;
+            var oldBuildingUnitList = groupedBuildingUnitList[buildingId];
+
+            for(var i = oldBuildingUnitList.length - 1; i >= 0; i--) {
+                var buildingUnit = oldBuildingUnitList[i];
+                var buildingData = buildingUnit.building;
+
+                if (buildingObj === null) {
+                    buildingObj = {
+                        name: buildingData.name,
+                        location: buildingData.location,
+                        trainStation: angular.copy(buildingData.trainStation),
+                        specs: angular.copy(buildingData.specs),
+                        lifts: angular.copy(buildingData.lifts),
+                        lease: angular.copy(buildingData.lease),
+                        parking: angular.copy(buildingData.parking),
+                        utilities: angular.copy(buildingData.utilities),
+                        units: []
+                    };
+                }
+
+                buildingObj.units.push({
+                    'unitName': buildingUnit.name,
+                    'floor': buildingUnit.floor,
+                    'area': buildingUnit.area,
+                    'price': buildingUnit.price,
+                    'type': buildingUnit.type,
+                    'available': buildingUnit.available,
+                    'remarks': buildingUnit.remark,
+                    'contact': buildingUnit.contact
+                });
+            }
+
+            data.push(buildingObj);
+        }
+
+        return data;
     };
 
     return ExportUtil;

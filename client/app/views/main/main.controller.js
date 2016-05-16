@@ -38,11 +38,15 @@ angular.module('officeManagementApp')
             });
         };
 
-        function exportSelection (fileType) {
+        function exportSelection (fileExtension) {
             var selectedBuildingUnitList = _.filter($scope.buildingUnitList, { selected: true });
 
-            if (fileType === 'pdf') {
+            if (fileExtension === 'pdf') {
                 ExportUtil.toPdf(selectedBuildingUnitList);
+            } else if (fileExtension === 'xls') {
+                ExportUtil.toExcel(selectedBuildingUnitList);
+            } else if (fileExtension === 'json') {
+                ExportUtil.toJson(selectedBuildingUnitList);
             }
         };
 
