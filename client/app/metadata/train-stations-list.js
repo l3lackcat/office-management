@@ -1,8 +1,8 @@
 'use strict';
 
 angular.module('officeManagementApp')
-    .run(function (AppConstant) {
-        AppConstant['TRAIN_STATION_LIST'] = {
+    .run(function (Metadata) {
+        Metadata['TRAIN_STATION_LIST'] = {
             BTS: [
                 { code: 'CEN', name: 'Siam' },
                 { code: 'N01', name: 'Ratchathewi' },

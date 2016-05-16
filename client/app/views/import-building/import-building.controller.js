@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('officeManagementApp')
-  .controller('ImportBuildingCtrl', function ($http, $loading, $q, $scope, $uibModal, _, AppConstant, FileUploader, XLSX) {
+  .controller('ImportBuildingCtrl', function ($http, $loading, $q, $scope, $uibModal, _, Metadata, FileUploader, XLSX) {
     var _importedBuildingList = null;
 
     $scope.uploader = new FileUploader();
@@ -203,7 +203,7 @@ angular.module('officeManagementApp')
     };
 
     function previewBuilding () {
-        var options = _.find(AppConstant.MODAL_LIST, { name: 'BuildingViewerModal' });
+        var options = _.find(Metadata.MODAL_LIST, { name: 'BuildingViewerModal' });
 
         if (options != null) {
             options.resolve = {

@@ -1,157 +1,119 @@
 'use strict';
 
 angular.module('officeManagementApp')
-    .controller('MainController', function ($filter, $http, $loading, $q, $scope, _, AppConstant, PdfService) {
+    .controller('MainController', function ($filter, $loading, $q, $scope, _, AppUtil, BuildingService, ExportUtil, Metadata) {
         $scope.buildingUnitList = [];
-        $scope.buildingUnitFilter = {
-            buildingName: '',
-            areaRange: {
-                list: AppConstant.AREA_RANGE_LIST,
-                selected: []
-            },
-            location: {
-                list: [],
-                selected: []
-            },
-            netPriceRange: {
-                list: AppConstant.NET_PRICE_RANGE_LIST,
-                selected: []
-            },
-            priceRange: {
-                list: AppConstant.PRICE_RANGE_LIST,
-                selected: []
-            },
-            type: {
-                list: [
-                    { id: 0, name: 'Office' },
-                    { id: 1, name: 'Retail' }
-                ],
-                selected: []
-            }
-        };
+        $scope.buildingFilter = angular.copy(Metadata.BUILDING_FILTER);
         $scope.isSelectAllBuildingUnit = false;
         $scope.actionButton = {
             disabled: true,
             isOpen: false
         };
 
-        $scope.applyFilter = applyFilter;
-        $scope.exportToPdf = exportToPdf;
         $scope.init = init;
-        $scope.print = print;
+        $scope.applyFilter = applyFilter;
+
+        $scope.exportSelection = exportSelection;
+        $scope.printSelection = printSelection;
+        $scope.removeSelection = removeSelection;
         $scope.setBuildingUnitAvaillable = setBuildingUnitAvaillable;
+
         $scope.toggleBuildingUnitSelection = toggleBuildingUnitSelection;
         $scope.updateBuildingUnitSelection = updateBuildingUnitSelection;
-        $scope.removeAll = removeAll;
 
         $scope.init();
-
-        function applyFilter (item) {
-            return validateBuildingNameFilter(item) && validateLocationFilter(item) && validateAreaFilter(item) && validateNetPriceFilter(item) && validatePriceFilter(item) && validateTypeFilter(item);
-        };
-
-        function exportToPdf () {
-            var selectedBuildingUnitList = _.filter($scope.buildingUnitList, { selected: true });
-            
-            if (selectedBuildingUnitList.length === 0) {
-                // TODO
-            } else {
-                PdfService.createBuildingDetailReport(selectedBuildingUnitList);
-            }
-        };
-
-        function getBuildingList () {
-            return $http.get('/api/buildings').success(function (buildingList) {
-                return buildingList;
-            });
-        };
-
-        function getBuildingUnitList () {
-            return $http.get('/api/building-units').success(function (buildingUnitList) {
-                return buildingUnitList;
-            });
-        };
 
         function init () {
             $loading.start('main');
 
             $q.all([
-                getBuildingList(),
-                getBuildingUnitList()
+                BuildingService.getBuildingUnitList()
             ]).then(function (results) {
-                var buildingList = results[0].data;
-                var buildingUnitList = results[1].data;
+                var buildingUnitList = results[0].data;
 
                 $scope.buildingUnitList = buildingUnitList;
-                $scope.buildingUnitFilter.location.list = generateArrBuildingLocation(buildingList);
+                $scope.buildingFilter.location.list = AppUtil.createLocationFilterList(buildingUnitList);
 
                 $loading.finish('main');
             });
         };
 
-        function print () {
+        function exportSelection (fileExtension) {
             var selectedBuildingUnitList = _.filter($scope.buildingUnitList, { selected: true });
-            
-            if (selectedBuildingUnitList.length === 0) {
-                // TODO
-            } else {
-                PdfService.createBuildingDetailReport(selectedBuildingUnitList, 'print');
+
+            if (fileExtension === 'pdf') {
+                ExportUtil.toPdf(selectedBuildingUnitList);
+            } else if (fileExtension === 'xls') {
+                ExportUtil.toExcel(selectedBuildingUnitList);
+            } else if (fileExtension === 'json') {
+                ExportUtil.toJson(selectedBuildingUnitList);
             }
         };
 
-        function generateArrBuildingLocation (buildingList) {
-            var buildingLocationList = [];
-            var possibleLocationList = _.uniq(_.without(_.map(buildingList, 'location'), null));
+        function printSelection () {
+            var selectedBuildingUnitList = _.filter($scope.buildingUnitList, { selected: true });
 
-            for(var i = possibleLocationList.length - 1; i >= 0; i--) {
-                buildingLocationList.push({
-                    id: i,
-                    name: possibleLocationList[i]
-                });
-            }
-
-            return _.sortBy(buildingLocationList, 'name');
+            ExportUtil.print(selectedBuildingUnitList);
         };
 
-        function generateArrBuildingUnitType (buildingUnitList) {
-            var buildingUnitTypeList = [];
-            var possibleUnitTypeList = _.uniq(_.without(_.map(buildingUnitList, 'type'), null));
+        function removeSelection () {
+            $loading.start('main');
 
-            for(var i = possibleUnitTypeList.length - 1; i >= 0; i--) {
-                buildingUnitTypeList.push({
-                    id: i,
-                    name: possibleUnitTypeList[i]
-                });
-            }
+            var selectedBuildingUnitList = _.filter($scope.buildingUnitList, { selected: true });
 
-            return _.sortBy(buildingUnitTypeList, 'name');
-        };
+            $q.all(BuildingService.removeBuildingUnit(selectedBuildingUnitList)).then(function (results) {
+                var buildingIdList = [];
 
-        function generateArrBuildingUnit (buildingUnitList) {
-            for(var i = buildingUnitList.length - 1; i >= 0; i--) {
-                buildingUnitList[i].selected = false;
-            }
+                for(var buildingUnitId in results) {
+                    var result = results[buildingUnitId];
 
-            return buildingUnitList;
+                    if (result.status === 204) {
+                        var index = _.findIndex($scope.buildingUnitList, { _id: buildingUnitId });
+
+                        if (index > -1) {
+                            var buildingId = $scope.buildingUnitList[index].building._id;
+
+                            if (buildingIdList.indexOf(buildingId) < 0) {
+                                buildingIdList.push(buildingId);
+                            }
+
+                            $scope.buildingUnitList.splice(index, 1);
+                        }
+                    }
+                }
+
+                updateBuildingUnitSelection();
+                // remove building with no units??
+
+                $loading.finish('main');
+            });
         };
 
         function setBuildingUnitAvaillable (isAvailable) {
-            var selectedBuildingUnitList = _.filter($scope.buildingUnitList, { selected: true });
-            var buildingUnitPromise = [];
+            $loading.start('main');
+
+            var selectedBuildingUnitList = angular.copy(_.filter($scope.buildingUnitList, { selected: true }));
 
             for(var i = selectedBuildingUnitList.length - 1; i >= 0; i--) {
-                var buildingUnit = selectedBuildingUnitList[i];
-
-                buildingUnit.available = isAvailable;
-
-                buildingUnitPromise.push($http.put('/api/building-units/' + buildingUnit._id, buildingUnit));
+                selectedBuildingUnitList[i].available = isAvailable;
             }
 
-            if (buildingUnitPromise.length > 0) {
-                $q.all(buildingUnitPromise).then(function (results) {
-                    // Do Nothing
-                });
-            }
+            $q.all(BuildingService.updateBuildingUnitList(selectedBuildingUnitList)).then(function (results) {
+                for(var buildingUnitId in results) {
+                    var result = results[buildingUnitId];
+
+                    if (result.status === 200) {
+                        var newBuildingUnit = result.data;
+                        var oldBuildingUnit = _.find($scope.buildingUnitList, { _id: buildingUnitId });
+
+                        if (oldBuildingUnit != null) {
+                            oldBuildingUnit.available = newBuildingUnit.available;
+                        }
+                    }
+                }
+
+                $loading.finish('main');
+            });
         };
 
         function toggleBuildingUnitSelection () {
@@ -182,140 +144,111 @@ angular.module('officeManagementApp')
             }
         };
 
-        function validateAreaFilter (item) {
-            var selectedAreaRangeList = $scope.buildingUnitFilter.areaRange.selected;
+        function applyFilter (item) {
+            var result = true;
 
-            if (selectedAreaRangeList.length === 0) {
-                return true;
-            } else {
-                for(var i = selectedAreaRangeList.length - 1; i >= 0; i--) {
-                    var isValid = validateRange(item.area, selectedAreaRangeList[i].min, selectedAreaRangeList[i].max);
+            result = result && validateBuildingNameFilter(item);
+            result = result && validateBuildingLocationFilter(item);
+            result = result && validateBuildingUnitTypeFilter(item);
+            result = result && validateBuildingUnitAreaFilter(item);
+            result = result && validateBuildingUnitPriceFilter(item);
+            result = result && validateBuildingUnitNetPriceFilter(item);
 
-                    if (isValid === true) {
-                        return true;
-                    }
-                }
-            }
+            return result;
 
-            return false;
-        };
+            function validateBuildingNameFilter (item) {
+                var strBuildingName = $scope.buildingFilter.name;
 
-        function validateBuildingNameFilter (item) {
-            var strBuildingName = $scope.buildingUnitFilter.buildingName;
+                if (strBuildingName === '') { return true; }
+                if (item.building.name.toUpperCase().indexOf(strBuildingName.toUpperCase()) > -1) { return true; }
 
-            if (strBuildingName === '') { return true; }
-            if (item.building.name.toUpperCase().indexOf(strBuildingName.toUpperCase()) > -1) { return true; }
+                return false;
+            };
 
-            return false;
-        };
+            function validateBuildingLocationFilter (item) {
+                var selectedLocationList = $scope.buildingFilter.location.selected;
 
-        function validateLocationFilter (item) {
-            var selectedLocationList = $scope.buildingUnitFilter.location.selected;
-
-            if (selectedLocationList.length === 0) {
-                return true;
-            } else {
-                for(var i = selectedLocationList.length - 1; i >= 0; i--) {
-                    if (selectedLocationList[i].name === item.building.location) {
-                        return true;
-                    }
-                }
-            }
-
-            return false;
-        };
-
-        function validateNetPriceFilter (item) {
-            var selectedNetPriceRangeList = $scope.buildingUnitFilter.netPriceRange.selected;
-
-            if (selectedNetPriceRangeList.length === 0) {
-                return true;
-            } else {
-                for(var i = selectedNetPriceRangeList.length - 1; i >= 0; i--) {
-                    var isValid = validateRange(item.area * item.price, selectedNetPriceRangeList[i].min, selectedNetPriceRangeList[i].max);
-
-                    if (isValid === true) {
-                        return true;
-                    }
-                }
-            }
-
-            return false;
-        };
-
-        function validatePriceFilter (item) {
-            var selectedPriceRangeList = $scope.buildingUnitFilter.priceRange.selected;
-
-            if (selectedPriceRangeList.length === 0) {
-                return true;
-            } else {
-                for(var i = selectedPriceRangeList.length - 1; i >= 0; i--) {
-                    var isValid = validateRange(item.price, selectedPriceRangeList[i].min, selectedPriceRangeList[i].max);
-
-                    if (isValid === true) {
-                        return true;
-                    }
-                }
-            }
-
-            return false;
-        };
-
-        function validateTypeFilter (item) {
-            var selectedTypeList = $scope.buildingUnitFilter.type.selected;
-
-            if (selectedTypeList.length === 0) {
-                return true;
-            } else {
-                for(var i = selectedTypeList.length - 1; i >= 0; i--) {
-                    if (selectedTypeList[i].name === item.type) {
-                        return true;
-                    }
-                }
-            }
-
-            return false;
-        };
-
-        function validateRange (input, min, max) {
-            if ((min !== null) && (max !== null)) {
-                if ((input >= min) && (input <= max)) {
+                if (selectedLocationList.length === 0) {
                     return true;
+                } else {
+                    for(var i = selectedLocationList.length - 1; i >= 0; i--) {
+                        if (selectedLocationList[i].name === item.building.location) {
+                            return true;
+                        }
+                    }
                 }
-            } else if ((min !== null) && (max === null)) {
-                if (input >= min) {
+
+                return false;
+            };
+
+            function validateBuildingUnitTypeFilter (item) {
+                var selectedFilterList = $scope.buildingFilter.unit.type.selected;
+
+                if (selectedFilterList.length === 0) {
                     return true;
+                } else {
+                    for(var i = selectedFilterList.length - 1; i >= 0; i--) {
+                        if (selectedFilterList[i].name === item.type) {
+                            return true;
+                        }
+                    }
                 }
-            } else if ((min === null) && (max !== null)) {
-                if (input <= max) {
+
+                return false;
+            };
+
+            function validateBuildingUnitAreaFilter (item) {
+                var selectedFilterList = $scope.buildingFilter.unit.area.selected;
+
+                if (selectedFilterList.length === 0) {
                     return true;
-                }
-            }
+                } else {
+                    for(var i = selectedFilterList.length - 1; i >= 0; i--) {
+                        var isValid = AppUtil.isBetween(item.area, selectedFilterList[i].min, selectedFilterList[i].max);
 
-            return false;
-        };
-
-        function removeAll () {
-            var deletePromise = {};
-
-            $loading.start('main');
-
-            for(var i = $scope.buildingUnitList.length - 1; i >= 0; i--) {
-                var buildingId = $scope.buildingUnitList[i].building._id;
-                var buildingUnitId = $scope.buildingUnitList[i]._id;
-
-                if (deletePromise.hasOwnProperty(buildingId) === false) {
-                    deletePromise[buildingId] = $http.delete('/api/buildings/' + buildingId);
+                        if (isValid === true) {
+                            return true;
+                        }
+                    }
                 }
 
-                if (deletePromise.hasOwnProperty(buildingUnitId) === false) {
-                    deletePromise[buildingUnitId] = $http.delete('/api/building-units/' + buildingUnitId);
-                }
-            }
+                return false;
+            };
 
-            $q.all(deletePromise).then(function () {
-                $scope.buildingUnitList = [];
-                $loading.finish('main');
-            });
+            function validateBuildingUnitPriceFilter (item) {
+                var selectedFilterList = $scope.buildingFilter.unit.price.selected;
+
+                if (selectedFilterList.length === 0) {
+                    return true;
+                } else {
+                    for(var i = selectedFilterList.length - 1; i >= 0; i--) {
+                        var isValid = AppUtil.isBetween(item.price, selectedFilterList[i].min, selectedFilterList[i].max);
+
+                        if (isValid === true) {
+                            return true;
+                        }
+                    }
+                }
+
+                return false;
+            };
+
+            function validateBuildingUnitNetPriceFilter (item) {
+                var selectedFilterList = $scope.buildingFilter.unit.netPrice.selected;
+
+                if (selectedFilterList.length === 0) {
+                    return true;
+                } else {
+                    for(var i = selectedFilterList.length - 1; i >= 0; i--) {
+                        var isValid = AppUtil.isBetween(item.area * item.price, selectedFilterList[i].min, selectedFilterList[i].max);
+
+                        if (isValid === true) {
+                            return true;
+                        }
+                    }
+                }
+
+                return false;
+            };
         };
 });
